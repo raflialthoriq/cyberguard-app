@@ -49,6 +49,45 @@
             </label>
         </div>
 
+        <?php if($user['peran'] === 'siswa'): ?>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+            
+            <div class="neu-flat p-5 rounded-3xl text-center flex flex-col justify-center items-center md:col-span-1">
+                <span class="text-3xl mb-1">✨</span>
+                <span class="text-2xl font-black text-indigo-600"><?= esc($user['total_poin'] ?? 0) ?></span>
+                <span class="text-[9px] font-extrabold text-gray-400 uppercase tracking-widest mt-1">Total Poin CBT</span>
+            </div>
+
+            <div class="neu-flat p-5 rounded-3xl md:col-span-2">
+                <h3 class="text-[9px] uppercase tracking-widest font-extrabold text-gray-400 mb-3 text-center md:text-left">Lencana Tersedia</h3>
+                <div class="flex justify-around md:justify-start gap-4">
+                    
+                    <div class="flex flex-col items-center text-center <?= $lencana['perisai_pertama'] ? '' : 'opacity-30 grayscale' ?>">
+                        <div class="w-12 h-12 rounded-full <?= $lencana['perisai_pertama'] ? 'bg-blue-100 text-blue-600' : 'neu-pressed text-gray-400' ?> flex items-center justify-center text-xl shadow-inner font-bold" title="Lulus Modul 1">
+                            🛡️
+                        </div>
+                        <span class="text-[9px] font-bold mt-1 text-gray-600">Perisai Pertama</span>
+                    </div>
+
+                    <div class="flex flex-col items-center text-center <?= $lencana['master_emosi'] ? '' : 'opacity-30 grayscale' ?>">
+                        <div class="w-12 h-12 rounded-full <?= $lencana['master_emosi'] ? 'bg-purple-100 text-purple-600' : 'neu-pressed text-gray-400' ?> flex items-center justify-center text-xl shadow-inner font-bold" title="Selesaikan 5 Simulasi Cerita">
+                            🔮
+                        </div>
+                        <span class="text-[9px] font-bold mt-1 text-gray-600">Master Emosi</span>
+                    </div>
+
+                    <div class="flex flex-col items-center text-center <?= $lencana['penulis_harian'] ? '' : 'opacity-30 grayscale' ?>">
+                        <div class="w-12 h-12 rounded-full <?= $lencana['penulis_harian'] ? 'bg-teal-100 text-teal-600' : 'neu-pressed text-gray-400' ?> flex items-center justify-center text-xl shadow-inner font-bold" title="Mengisi Lebih dari 7 Jurnal">
+                            ✍️
+                        </div>
+                        <span class="text-[9px] font-bold mt-1 text-gray-600">Penulis Harian</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+    
         <form id="formProfil" action="/profil/update" method="POST">
             <input type="hidden" name="avatar_base64" id="avatar_base64">
 
@@ -117,6 +156,43 @@
                 </button>
             </div>
         </form>
+
+                    <?php 
+            // Cek apakah siswa sudah punya kelas
+            $db = \Config\Database::connect();
+            $info_kelas = null;
+            if($user['peran'] == 'siswa' && $user['id_kelas']) {
+                $info_kelas = $db->table('kelas')
+                                 ->join('pengguna', 'pengguna.id_pengguna = kelas.id_guru')
+                                 ->where('kelas.id_kelas', $user['id_kelas'])
+                                 ->select('kelas.nama_kelas, pengguna.nama_lengkap as nama_guru')
+                                 ->get()->getRowArray();
+            }
+            ?>
+
+            <?php if($user['peran'] === 'siswa'): ?>
+            <div class="mt-6 pt-6 border-t border-gray-300/50">
+                <h3 class="text-[10px] uppercase tracking-widest font-extrabold text-gray-400 mb-4">Integrasi Guru BK</h3>
+                
+                <?php if($info_kelas): ?>
+                    <div class="neu-pressed p-4 rounded-xl flex justify-between items-center border-l-4 border-teal-500 bg-teal-50/30">
+                        <div>
+                            <p class="text-xs font-extrabold text-teal-700">Tergabung di: <?= esc($info_kelas['nama_kelas']) ?></p>
+                            <p class="text-[10px] font-bold text-teal-600/80">Guru BK: <?= esc($info_kelas['nama_guru']) ?></p>
+                        </div>
+                        <span class="text-2xl">🎓</span>
+                    </div>
+                <?php else: ?>
+                    <div class="neu-flat p-4 rounded-xl border-l-4 border-orange-400">
+                        <p class="text-xs font-bold text-gray-600 mb-3">Kamu belum terhubung dengan Guru BK. Masukkan kode undangan dari gurumu.</p>
+                        <form action="/profil/gabung_kelas" method="POST" class="flex gap-2">
+                            <input type="text" name="kode_kelas" placeholder="Masukkan 6 digit kode" class="w-full neu-pressed px-4 py-2 rounded-lg focus:outline-none text-sm font-bold text-gray-700 uppercase" required maxlength="15">
+                            <button type="submit" class="bg-orange-500 text-white font-extrabold px-4 py-2 rounded-lg shadow-md hover:bg-orange-600 transition active:scale-95 text-xs whitespace-nowrap">Gabung</button>
+                        </form>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
     </div>
 
     <!-- Modal Popup Cropper -->

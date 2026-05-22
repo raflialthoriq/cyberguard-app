@@ -333,6 +333,12 @@ class Siswa extends BaseController
         }
 
         if ($skor_akhir >= 70) {
+            // --- LOGIKA TAMBAH POIN GAMIFIKASI ---
+            if (!$progres_sebelumnya || $progres_sebelumnya['status_modul'] !== 'selesai') {
+                $db->query("UPDATE pengguna SET total_poin = total_poin + 5 WHERE id_pengguna = ?", [$id_pengguna]);
+            }
+            // -------------------------------------
+            
             session()->setFlashdata('pesan_sukses', 'Selamat! Kamu LULUS dengan skor ' . $skor_akhir . '%. Modul berikutnya telah terbuka!');
         } else {
             session()->setFlashdata('pesan_gagal', 'Skor kamu ' . $skor_akhir . '%. Butuh 70% untuk lulus. Cek jawaban merahmu dan perbaiki di mode Remedial!');
@@ -379,7 +385,12 @@ class Siswa extends BaseController
                 'tanggal_percobaan' => date('Y-m-d H:i:s')
             ]);
 
-            if ($skor > 0) session()->setFlashdata('pesan_sukses', "Skor CBT +$skor! {$opsi_terpilih['feedback_opsi']}");
+            if ($skor > 0) {
+                $db = \Config\Database::connect();
+                $db->query("UPDATE pengguna SET total_poin = total_poin + 10 WHERE id_pengguna = ?", [session()->get('id_pengguna')]);
+
+                session()->setFlashdata('pesan_sukses', "Skor CBT +$skor! {$opsi_terpilih['feedback_opsi']}");
+            } 
             else session()->setFlashdata('pesan_gagal', "Skor CBT $skor. {$opsi_terpilih['feedback_opsi']}");
         }
         return redirect()->to('/siswa/simulasi');

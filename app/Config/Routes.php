@@ -94,6 +94,9 @@ $routes->get('/admin/kelola_tips', 'Admin::kelola_tips');
 $routes->post('/admin/simpan_tips', 'Admin::simpan_tips');
 $routes->get('/admin/hapus_tips/(:num)', 'Admin::hapus_tips/$1');
 
+$routes->get('/admin/ekspor_riset', 'Admin::ekspor_riset');
+$routes->get('/admin/unduh_csv/(:segment)', 'Admin::unduh_csv/$1');
+
 // ==========================================
 // RUTE GURU BK (Pemantauan CBT Siswa)
 // ==========================================
@@ -134,3 +137,6 @@ $routes->get('/guru/dashboard', 'Guru::dashboard');
 // ==========================================
 $routes->get('/profil', 'Profil::index');
 $routes->post('/profil/update', 'Profil::update');
+$routes->post('/profil/gabung_kelas', 'Profil::gabung_kelas');
+$routes->get('/guru/intervensi_dini', 'Guru::intervensi_dini');
+$routes->get('/guru/panduan_fasilitator', 'Guru::panduan_fasilitator');

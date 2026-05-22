@@ -6,11 +6,41 @@ class Profil extends BaseController
 {
     public function index()
     {
-        if (!session()->get('logged_in')) return redirect()->to('/auth');
+        if (!session()->get('peran')) return redirect()->to('/auth');
 
-        $penggunaModel = new PenggunaModel();
-        $data['user'] = $penggunaModel->find(session()->get('id_pengguna'));
+        $penggunaModel = new \App\Models\PenggunaModel();
+        $db = \Config\Database::connect();
         
+        $id_pengguna = session()->get('id_pengguna');
+        $user = $penggunaModel->find($id_pengguna);
+
+        // --- DINAMIS CEK ACHIEVEMENT / LENCANA (HALAMAN 27 PDF) ---
+        $lencana = [
+            'perisai_pertama' => false,
+            'master_emosi'    => false,
+            'penulis_harian'  => false
+        ];
+
+        if ($user['peran'] === 'siswa') {
+            // 1. Perisai Pertama: Lulus Modul 1
+            $modul1 = $db->table('progres_siswa')->where(['id_pengguna' => $id_pengguna, 'id_modul' => 1, 'status_modul' => 'selesai'])->get()->getRow();
+            if ($modul1) $lencana['perisai_pertama'] = true;
+
+            // 2. Master Emosi: Menyelesaikan minimal 5 Skenario/Mencoba Simulasi
+            $totalSimulasi = $db->table('riwayat_simulasi')->where('id_pengguna', $id_pengguna)->countAllResults();
+            if ($totalSimulasi >= 5) $lencana['master_emosi'] = true;
+
+            // 3. Penulis Harian: Mengisi Jurnal Diary (Cek total isi diary atau streak)
+            $totalJurnal = $db->table('log_suasana_hati')->where('id_pengguna', $id_pengguna)->countAllResults();
+            if ($totalJurnal >= 7) $lencana['penulis_harian'] = true;
+        }
+        // -----------------------------------------------------------
+
+        $data = [
+            'user'    => $user,
+            'lencana' => $lencana
+        ];
+
         return view('profil/index', $data);
     }
 
@@ -104,6 +134,45 @@ class Profil extends BaseController
         }
 
         session()->setFlashdata('pesan', 'Profil berhasil diperbarui!');
+        return redirect()->to('/profil');
+    }
+
+    // ==========================================
+    // FUNGSI SISWA BERGABUNG KE KELAS GURU BK
+    // ==========================================
+    public function gabung_kelas()
+    {
+        if (session()->get('peran') !== 'siswa') return redirect()->to('/auth');
+        
+        $db = \Config\Database::connect();
+        
+        // 1. Ambil inputan dari siswa
+        $input_kode = (string) $this->request->getPost('kode_kelas');
+        
+        // 2. BERSIHKAN INPUT: Hapus spasi dan jadikan huruf kapital
+        $kode_kelas = strtoupper(preg_replace('/\s+/', '', $input_kode));
+
+        // 3. Percobaan Pertama: Cari kelas dengan kode asli
+        $kelas = $db->table('kelas')->where('kode_kelas', $kode_kelas)->get()->getRowArray();
+        
+        // 4. Percobaan Kedua (Auto-Correct): Jika tidak ketemu, mungkin siswa keliru ketik huruf 'O' padahal angka '0'
+        if (!$kelas) {
+            $kode_koreksi = str_replace('O', '0', $kode_kelas); // Ubah O jadi 0
+            $kelas = $db->table('kelas')->where('kode_kelas', $kode_koreksi)->get()->getRowArray();
+        }
+        
+        if ($kelas) {
+            // Jika kelas akhirnya ditemukan, tautkan profil siswa
+            $db->table('pengguna')->where('id_pengguna', session()->get('id_pengguna'))->update([
+                'id_kelas' => $kelas['id_kelas'],
+                'id_guru'  => $kelas['id_guru']
+            ]);
+            session()->setFlashdata('pesan', 'Berhasil bergabung dengan kelas: ' . $kelas['nama_kelas']);
+        } else {
+            // Pesan error ini sekarang akan mencetak kode yang diketik siswa agar kamu bisa mengecek salahnya di mana
+            session()->setFlashdata('pesan_gagal', "Kode [{$kode_kelas}] tidak ditemukan. Pastikan tidak ada salah ketik.");
+        }
+        
         return redirect()->to('/profil');
     }
 }
