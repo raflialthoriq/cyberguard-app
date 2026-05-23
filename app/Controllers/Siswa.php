@@ -16,14 +16,9 @@ class Siswa extends BaseController
     // ==========================================
     // FUNGSI PENJAGA RUTE KETAT (STRICT LOCKING)
     // ==========================================
-    private function _dapatkan_status_item($tipe_target, $id_target) {
+private function _dapatkan_status_item($tipe_target, $id_target) {
         $db = \Config\Database::connect();
         $id_pengguna = session()->get('id_pengguna');
-
-        // Di dalam function beranda() Siswa
-$db = \Config\Database::connect();
-// Cari jadwal yang sudah lewat 1 hari
-$db->query("UPDATE jadwal_konseling SET status = 'selesai' WHERE id_siswa = ? AND tanggal_konseling < DATE_SUB(NOW(), INTERVAL 1 DAY)", [session()->get('id_pengguna')]);
 
         // Ambil Modul dan Kuesioner beserta status pengerjaannya
         $modul = $db->query("SELECT id_modul as id, urutan_modul as urutan, 'modul' as tipe, (SELECT status_modul FROM progres_siswa WHERE id_modul = modul_belajar.id_modul AND id_pengguna = ?) as status_modul FROM modul_belajar", [$id_pengguna])->getResultArray();
@@ -38,20 +33,18 @@ $db->query("UPDATE jadwal_konseling SET status = 'selesai' WHERE id_siswa = ? AN
         foreach ($semua_item as $item) {
             $is_selesai = false;
             
-            // Cek apakah item ini sudah diselesaikan oleh siswa
             if ($item['tipe'] === 'modul' && $item['status_modul'] === 'selesai') $is_selesai = true;
             if ($item['tipe'] === 'kuesioner' && !empty($item['id_partisipasi'])) $is_selesai = true;
 
             $status_aktual = 'terkunci';
             if ($is_selesai) {
                 $status_aktual = 'selesai';
-                $buka_berikutnya = true; // Buka rantai untuk item selanjutnya
+                $buka_berikutnya = true;
             } elseif ($buka_berikutnya) {
                 $status_aktual = 'aktif';
-                $buka_berikutnya = false; // Kunci rantai untuk semua item setelah ini
+                $buka_berikutnya = false; 
             }
 
-            // Jika item dalam perulangan ini adalah item yang sedang ditanyakan, kembalikan statusnya
             if ($item['tipe'] === $tipe_target && $item['id'] == $id_target) {
                 return $status_aktual;
             }
@@ -62,15 +55,19 @@ $db->query("UPDATE jadwal_konseling SET status = 'selesai' WHERE id_siswa = ? AN
     // ==========================================
     // FITUR BERANDA & JURNAL
     // ==========================================
-    public function beranda()
+public function beranda()
     {
         if (session()->get('peran') !== 'siswa') return redirect()->to('/auth');
-
-        $modulModel = new ModulBelajarModel();
-        $progresModel = new ProgresSiswaModel();
-        $jurnalModel = new LogSuasanaHatiModel();
-
+        
+        $db = \Config\Database::connect();
         $id_pengguna = session()->get('id_pengguna');
+
+        // LOGIKA OTOMATISASI H+1: Ubah status jadwal menjadi 'selesai' jika sudah lewat 1 hari
+        $db->query("UPDATE jadwal_konseling SET status = 'selesai' WHERE id_siswa = ? AND tanggal_konseling < DATE_SUB(NOW(), INTERVAL 1 DAY)", [$id_pengguna]);
+
+        $modulModel = new \App\Models\ModulBelajarModel();
+        $progresModel = new \App\Models\ProgresSiswaModel();
+        $jurnalModel = new \App\Models\LogSuasanaHatiModel();
 
         $total_modul = $modulModel->countAllResults();
         $modul_selesai = $progresModel->where('id_pengguna', $id_pengguna)->where('status_modul', 'selesai')->countAllResults();
@@ -79,10 +76,7 @@ $db->query("UPDATE jadwal_konseling SET status = 'selesai' WHERE id_siswa = ? AN
         $jurnal_hari_ini = $jurnalModel->where('id_pengguna', $id_pengguna)->where('tanggal_jurnal', date('Y-m-d'))->first();
         $sudah_isi_mood = ($jurnal_hari_ini !== null);
 
-
-        $db = \Config\Database::connect();
         $random_tips = $db->query("SELECT isi_tips FROM tips_harian ORDER BY RAND() LIMIT 1")->getRowArray();
-        
         $tips_harian = $random_tips ? $random_tips['isi_tips'] : "Tetap semangat belajar dan jaga kesehatan mentalmu hari ini!";
 
         $data = [
@@ -292,16 +286,12 @@ $db->query("UPDATE jadwal_konseling SET status = 'selesai' WHERE id_siswa = ? AN
         return view('siswa/kuis_modul', $data);
     }
 
-    public function proses_kuis($id_modul)
+public function proses_kuis($id_modul)
     {
-        // --- PASTIKAN BARIS INI ADA DI DALAM FUNCTION SEBELUM QUERY ---
-        $db = \Config\Database::connect(); 
-        $db->query("UPDATE pengguna SET total_poin = total_poin + 5 WHERE id_pengguna = ?", [$id_pengguna]);
-
         if (session()->get('peran') !== 'siswa') return redirect()->to('/auth');
 
-        $soalModel = new SoalKuisModel();
-        $progresModel = new ProgresSiswaModel();
+        $soalModel = new \App\Models\SoalKuisModel();
+        $progresModel = new \App\Models\ProgresSiswaModel();
         
         $daftar_soal = $soalModel->where('id_modul', $id_modul)->findAll();
         $id_pengguna = session()->get('id_pengguna');
@@ -342,12 +332,11 @@ $db->query("UPDATE jadwal_konseling SET status = 'selesai' WHERE id_siswa = ? AN
         }
 
         if ($skor_akhir >= 70) {
-            // --- LOGIKA TAMBAH POIN GAMIFIKASI ---
+            // LOGIKA TAMBAH POIN GAMIFIKASI (Hanya dieksekusi saat LULUS)
             if (!$progres_sebelumnya || $progres_sebelumnya['status_modul'] !== 'selesai') {
+                $db = \Config\Database::connect(); 
                 $db->query("UPDATE pengguna SET total_poin = total_poin + 5 WHERE id_pengguna = ?", [$id_pengguna]);
             }
-            // -------------------------------------
-            
             session()->setFlashdata('pesan_sukses', 'Selamat! Kamu LULUS dengan skor ' . $skor_akhir . '%. Modul berikutnya telah terbuka!');
         } else {
             session()->setFlashdata('pesan_gagal', 'Skor kamu ' . $skor_akhir . '%. Butuh 70% untuk lulus. Cek jawaban merahmu dan perbaiki di mode Remedial!');

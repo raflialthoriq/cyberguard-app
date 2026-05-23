@@ -59,9 +59,8 @@
             </div>
             <div class="flex gap-2 mt-3 md:mt-0">
     <a href="/guru/baca_panduan/<?= $p['id_panduan'] ?>" class="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-sm hover:bg-indigo-700 transition flex items-center gap-1">
-        📖 Baca Langsung
+        Lihat
     </a>
-    <button onclick="alert('Mengunduh lampiran...')" class="neu-flat text-gray-600 font-bold text-xs px-3 py-2 rounded-xl">⬇️ PDF</button>
 </div>
         </div>
     <?php endforeach; ?>

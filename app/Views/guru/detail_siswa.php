@@ -12,7 +12,6 @@
             <h1 class="text-xl font-black text-gray-800">Rekam Medis Pembelajaran Siswa 🎓</h1>
             <p class="text-xs text-blue-600 font-bold"><?= esc($siswa['nama_lengkap']) ?> (Skor Mental Health: <?= $siswa['skor_kesejahteraan'] ?> Poin)</p>
         </div>
-        <a href="/guru/manajemen_kelas" class="neu-flat px-4 py-2 rounded-xl text-xs font-bold text-gray-500">⬅️ Kembali</a>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -40,5 +39,18 @@
             </div>
         </div>
     </div>
+
+        <nav class="fixed bottom-0 left-0 w-full bg-[#E0E5EC] rounded-t-3xl border-t border-white/50 z-50 shadow-2xl">
+        <div class="max-w-5xl mx-auto px-2 py-3 flex justify-between items-center text-center">
+            <a href="/guru/beranda" class="flex-1 flex flex-col items-center text-gray-400"> <span class="text-lg">📊</span> <span class="text-[9px] font-bold">Dasbor</span> </a>
+            <a href="/guru/manajemen_kelas" class="flex-1 flex flex-col items-center text-blue-600"> <span class="text-lg">👥</span> <span class="text-[9px] font-black">Kelas</span> </a>
+            <a href="/guru/intervensi_dini" class="flex-1 flex flex-col items-center text-gray-400"> <span class="text-lg">🚨</span> <span class="text-[9px] font-bold">Intervensi</span> </a>
+            <a href="/guru/panduan_fasilitator" class="flex-1 flex flex-col items-center text-gray-400"> <span class="text-lg">📚</span> <span class="text-[9px] font-bold">Panduan</span> </a>
+            <a href="/guru/laporan_cepat" class="flex-1 flex flex-col items-center text-gray-400"> <span class="text-lg">📄</span> <span class="text-[9px] font-bold">Laporan</span> </a>
+            <a href="/profil" class="flex-1 flex flex-col items-center text-gray-400"> <span class="text-lg">👤</span> <span class="text-[9px] font-bold">Profil</span> </a>
+            <a href="/auth/logout" class="flex-1 flex flex-col items-center text-gray-400"> <span class="text-lg">🚪</span> <span class="text-[9px] font-bold">Keluar</span> </a>
+        </div>
+    </nav>
+
 </body>
 </html>

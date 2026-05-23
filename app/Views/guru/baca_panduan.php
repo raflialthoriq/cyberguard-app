@@ -13,7 +13,6 @@
             <h1 class="text-2xl font-black text-gray-800 mt-1"><?= esc($panduan['judul_panduan']) ?></h1>
             <p class="text-xs text-gray-500 font-bold mt-1"><?= esc($panduan['deskripsi']) ?></p>
         </div>
-        <a href="/guru/panduan_fasilitator" class="neu-flat px-4 py-2 rounded-xl text-xs font-bold text-gray-500">⬅️ Kembali</a>
     </div>
 
     <div class="neu-flat p-4 md:p-6 rounded-3xl bg-[#E0E5EC] mb-6 border border-white/60">
@@ -52,7 +51,21 @@
                 <?= $panduan['konten_panduan'] ? $panduan['konten_panduan'] : '<p class="text-gray-400 italic">Materi bacaan kosong.</p>' ?>
             </div>
         </div>
-
     </div>
+
+    <nav class="fixed bottom-0 left-0 w-full bg-[#E0E5EC] rounded-t-3xl border-t border-white/50 z-50" style="box-shadow: 0 -10px 25px rgba(163,177,198,0.4);">
+        <div class="max-w-5xl mx-auto px-2 md:px-6 py-3 flex justify-between items-center text-center">
+            <a href="/guru/beranda" class="flex flex-col items-center text-gray-400 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📊</span> <span class="text-[9px] md:text-[10px] font-extrabold truncate w-full">Dasbor</span> </a>
+            <a href="/guru/manajemen_kelas" class="flex flex-col items-center text-gray-400 hover:text-blue-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">👥</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Kelas</span> </a>
+            <a href="/guru/intervensi_dini" class="flex flex-col items-center text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🚨</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Intervensi</span> </a>
+            <a href="/guru/panduan_fasilitator" class="flex flex-col items-center text-orange-500 hover:text-orange-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 drop-shadow-md">📚</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Panduan</span> </a>
+            <a href="/guru/laporan_cepat" class="flex flex-col items-center text-gray-400 hover:text-purple-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📄</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Laporan</span> </a>
+            <a href="/profil" class="flex flex-col items-center text-gray-400 hover:text-blue-600 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">👤</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Profil</span> </a>
+            <a href="/auth/logout" class="flex flex-col items-center w-1/6 text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1">
+                <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🚪</span>
+                <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Keluar</span>
+            </a>
+        </div>
+    </nav>
 </body>
 </html>

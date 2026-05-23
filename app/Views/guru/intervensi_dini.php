@@ -21,7 +21,6 @@
             <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Intervensi & Penjadwalan 🚨</h1>
             <p class="text-xs font-bold text-gray-500 mt-1">Pantau siswa berisiko dan kelola agenda konseling BK.</p>
         </div>
-        <a href="/guru/beranda" class="neu-flat px-4 py-2 rounded-xl text-xs font-bold text-gray-500 hover:text-gray-800">⬅️ Beranda</a>
     </div>
 
     <?php if(session()->getFlashdata('pesan')): ?>
@@ -34,34 +33,38 @@
             <h2 class="font-extrabold text-sm text-gray-800 mb-4 uppercase tracking-wider px-2">Siswa Butuh Perhatian</h2>
             <div class="space-y-4 max-h-[600px] overflow-y-auto hide-scrollbar pr-2">
                 <?php foreach($daftar_flagged as $siswa): ?>
-                    <div class="neu-flat p-5 rounded-3xl border-l-4 <?= $siswa['keparahan'] == 'high' ? 'border-red-500' : 'border-yellow-500' ?>">
-                        <div class="flex items-center space-x-4 mb-4">
-                            <div class="w-12 h-12 rounded-full neu-pressed flex items-center justify-center font-black text-gray-600">
-                                <?= esc($siswa['inisial']) ?>
-                            </div>
-                            <div class="neu-flat p-5 rounded-3xl mb-4 border-l-4 border-blue-500">
-    <h3 class="font-black text-gray-800 text-sm"><?= esc($siswa['nama']) ?></h3>
-    <p class="text-[10px] font-bold text-gray-500">Kelas: <?= esc($siswa['nama_kelas']) ?> | Email: <?= esc($siswa['email']) ?></p>
-    <p class="text-[10px] text-red-500 font-bold mt-2">Pemicu: <?= esc($siswa['alasan']) ?></p>
-    </div>
+                    <div class="neu-flat p-5 rounded-3xl border-l-4 <?= $siswa['is_processed'] ? 'border-green-500' : ($siswa['keparahan'] == 'high' ? 'border-red-500' : 'border-yellow-500') ?>">
+                        
+                        <div class="mb-4">
+                            <h3 class="font-black text-gray-800 text-sm"><?= esc($siswa['nama']) ?></h3>
+                            <p class="text-[10px] font-bold text-gray-500 mt-0.5">Kelas: <?= esc($siswa['nama_kelas']) ?> | Email: <?= esc($siswa['email']) ?></p>
+                            <p class="text-[10px] text-red-500 font-bold mt-1">Pemicu: <?= esc($siswa['alasan']) ?></p>
                         </div>
                         
-                        <form action="/guru/simpan_jadwal_konseling" method="POST" class="space-y-3 bg-white/20 p-4 rounded-2xl">
-                            <input type="hidden" name="id_siswa" value="<?= $siswa['id_siswa'] ?>">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[9px] font-black text-gray-400 uppercase mb-1">Tanggal & Jam</label>
-                                    <input type="datetime-local" name="tanggal_konseling" class="w-full text-[10px] font-bold text-gray-700 bg-white p-2 rounded-lg border focus:outline-none" required>
-                                </div>
-                                <div>
-                                    <label class="block text-[9px] font-black text-gray-400 uppercase mb-1">Catatan Tempat</label>
-                                    <input type="text" name="catatan" placeholder="Misal: Ruang BK" class="w-full text-[10px] font-bold text-gray-700 bg-white p-2 rounded-lg border focus:outline-none" required>
-                                </div>
+                        <?php if($siswa['is_processed']): ?>
+                            <div class="mt-2 p-3 bg-green-50 border border-green-200 rounded-xl text-center shadow-inner">
+                                <span class="text-xs font-black text-green-600">✅ Sedang Ditindaklanjuti</span>
+                                <p class="text-[9px] font-bold text-green-500 mt-1">Kamu telah menjadwalkan konseling untuk siswa ini. Evaluasi peringatan sistem akan direset otomatis pekan depan.</p>
                             </div>
-                            <button type="submit" class="w-full bg-blue-600 text-white font-extrabold py-2 rounded-xl text-xs shadow hover:bg-blue-700 transition active:scale-95">
-                                💾 Jadwalkan Konseling
-                            </button>
-                        </form>
+                        <?php else: ?>
+                            <form action="/guru/simpan_jadwal_konseling" method="POST" class="space-y-3 bg-white/20 p-4 rounded-2xl">
+                                <input type="hidden" name="id_siswa" value="<?= $siswa['id_siswa'] ?>">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-[9px] font-black text-gray-400 uppercase mb-1">Tanggal & Jam</label>
+                                        <input type="datetime-local" name="tanggal_konseling" class="w-full text-[10px] font-bold text-gray-700 bg-white p-2 rounded-lg border focus:outline-none" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[9px] font-black text-gray-400 uppercase mb-1">Catatan Tempat</label>
+                                        <input type="text" name="catatan" placeholder="Misal: Ruang BK" class="w-full text-[10px] font-bold text-gray-700 bg-white p-2 rounded-lg border focus:outline-none" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full bg-blue-600 text-white font-extrabold py-2 rounded-xl text-xs shadow hover:bg-blue-700 transition active:scale-95">
+                                    💾 Jadwalkan Konseling & Kirim Email
+                                </button>
+                            </form>
+                        <?php endif; ?>
+
                     </div>
                 <?php endforeach; ?>
                 <?php if(empty($daftar_flagged)): ?>

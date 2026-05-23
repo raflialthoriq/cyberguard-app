@@ -39,6 +39,7 @@
                 <?php endif; ?>
             </select>
     <input type="email" name="email" placeholder="Pos-el" class="neu-pressed w-full px-5 py-4 rounded-2xl focus:outline-none" required>
+    <input type="text" name="no_wa" placeholder="Nomor WhatsApp" class="neu-pressed w-full px-5 py-4 rounded-2xl focus:outline-none" required>
     <input type="password" name="password" placeholder="Kata Sandi Baru" class="neu-pressed w-full px-5 py-4 rounded-2xl focus:outline-none" required>
     
     <!-- PROTEKSI KEAMANAN GURU -->

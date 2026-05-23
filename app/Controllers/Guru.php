@@ -166,39 +166,49 @@ class Guru extends BaseController
         ]);
     }
 
-    public function intervensi_dini() 
+ public function intervensi_dini() 
     {
         $this->cekAkses();
         $db = \Config\Database::connect();
         $id_guru = session()->get('id_pengguna');
 
         $batas_waktu = date('Y-m-d H:i:s', strtotime('-5 days'));
-        $siswa_bermasalah = $db->table('pengguna')
-                              ->where(['peran' => 'siswa', 'id_guru' => $id_guru])
-                              ->groupStart()
-                                  ->where('terakhir_login <', $batas_waktu)
-                                  ->orWhere('terakhir_login', null)
-                                  ->orWhere('skor_kesejahteraan <', 50)
-                              ->groupEnd()
-                              ->get()->getResultArray();
+        
+        // Ambil data siswa bermasalah (Join dengan tabel kelas untuk ambil nama kelas)
+        $siswa_bermasalah = $db->query("
+            SELECT p.*, k.nama_kelas 
+            FROM pengguna p
+            LEFT JOIN kelas k ON p.id_kelas = k.id_kelas
+            WHERE p.peran = 'siswa' AND p.id_guru = ? 
+            AND (p.terakhir_login < ? OR p.terakhir_login IS NULL OR p.skor_kesejahteraan < 50)
+        ", [$id_guru, $batas_waktu])->getResultArray();
+
+        // LOGIKA COOLDOWN 7 HARI (Evaluasi Pekan Depan)
+        // Cari siswa yang sudah dibuatkan jadwal dalam 7 hari terakhir
+        $jadwal_minggu_ini = $db->table('jadwal_konseling')
+                                ->where('id_guru', $id_guru)
+                                ->where('dibuat_pada >=', date('Y-m-d H:i:s', strtotime('-7 days')))
+                                ->get()->getResultArray();
+        $siswa_diproses = array_column($jadwal_minggu_ini, 'id_siswa');
 
         $daftar_flagged = [];
         foreach ($siswa_bermasalah as $siswa) {
-            $nama_parts = explode(' ', trim($siswa['nama_lengkap']));
-            $inisial = strtoupper(substr($nama_parts[0], 0, 1));
-            if (isset($nama_parts[1])) $inisial .= strtoupper(substr($nama_parts[1], 0, 1));
-
             $alasan = [];
-            if (!$siswa['terakhir_login'] || $siswa['terakhir_login'] < $batas_waktu) $alasan[] = 'Tidak aktif login';
-            if ($siswa['skor_kesejahteraan'] < 50) $alasan[] = 'Skor kesejahteraan kritis';
+            if (!$siswa['terakhir_login'] || $siswa['terakhir_login'] < $batas_waktu) $alasan[] = 'Tidak aktif login > 5 hari';
+            if ($siswa['skor_kesejahteraan'] < 50) $alasan[] = 'Skor kesejahteraan psikologis kritis';
+
+            // Cek apakah siswa ini masuk ke dalam daftar yang sudah diproses minggu ini
+            $is_processed = in_array($siswa['id_pengguna'], $siswa_diproses);
 
             $daftar_flagged[] = [
-                'id_siswa' => $siswa['id_pengguna'],
-                'nama' => $siswa['nama_lengkap'],
-                'skor' => $siswa['skor_kesejahteraan'],
-                'inisial' => $inisial,
-                'alasan' => implode(' & ', $alasan),
-                'keparahan' => ($siswa['skor_kesejahteraan'] < 40) ? 'high' : 'medium'
+                'id_siswa'   => $siswa['id_pengguna'],
+                'nama'       => $siswa['nama_lengkap'],
+                'email'      => $siswa['email'],
+                'nama_kelas' => $siswa['nama_kelas'] ?? 'Belum ada kelas',
+                'skor'       => $siswa['skor_kesejahteraan'],
+                'alasan'     => implode(' & ', $alasan),
+                'keparahan'  => ($siswa['skor_kesejahteraan'] < 40) ? 'high' : 'medium',
+                'is_processed' => $is_processed // Penanda untuk dikirim ke View
             ];
         }
 
@@ -206,22 +216,41 @@ class Guru extends BaseController
 
         return view('guru/intervensi_dini', [
             'daftar_flagged' => $daftar_flagged,
-            'daftar_jadwal' => $jadwal
+            'daftar_jadwal'  => $jadwal
         ]);
     }
 
-    public function simpan_jadwal_konseling()
+   public function simpan_jadwal_konseling()
     {
         $this->cekAkses();
         $db = \Config\Database::connect();
+        
+        $id_siswa = $this->request->getPost('id_siswa');
+        $tgl = $this->request->getPost('tanggal_konseling');
+        $cat = $this->request->getPost('catatan');
+
         $db->table('jadwal_konseling')->insert([
-            'id_guru' => session()->get('id_pengguna'),
-            'id_siswa' => $this->request->getPost('id_siswa'),
-            'tanggal_konseling' => $this->request->getPost('tanggal_konseling'),
-            'catatan' => $this->request->getPost('catatan'),
-            'status' => 'direncanakan'
+            'id_guru'           => session()->get('id_pengguna'),
+            'id_siswa'          => $id_siswa,
+            'tanggal_konseling' => $tgl,
+            'catatan'           => $cat,
+            'status'            => 'direncanakan'
         ]);
-        session()->setFlashdata('pesan', 'Jadwal konseling berhasil dikunci.');
+
+        // 1. Kumpulkan Data Siswa
+        $siswa = $db->table('pengguna')->where('id_pengguna', $id_siswa)->get()->getRowArray();
+
+        // 2. Eksekusi Notifikasi Email (Fungsi yang sudah kita buat sebelumnya)
+        $this->kirim_notifikasi_email($id_siswa, $tgl, $cat);
+        
+        // 3. Eksekusi Notifikasi WhatsApp
+        if (!empty($siswa['no_wa'])) {
+            $pesanWA = "*Panggilan Bimbingan CyberGuard* 🚨\n\nHalo *{$siswa['nama_lengkap']}*,\nGuru Bimbingan & Konseling (BK) mengundangmu untuk sesi diskusi pada:\n\n🗓️ Waktu: *" . date('d F Y, H:i', strtotime($tgl)) . " WIB*\n📍 Lokasi/Catatan: *{$cat}*\n\nKehadiranmu sangat berarti. Kami siap mendengarkanmu tanpa menghakimi. Tetap semangat!";
+            
+            $this->kirim_notifikasi_wa($siswa['no_wa'], $pesanWA);
+        }
+        
+        session()->setFlashdata('pesan', 'Jadwal berhasil dikunci. Undangan via Email & WhatsApp otomatis dikirim ke siswa.');
         return redirect()->to('/guru/intervensi_dini');
     }
 
@@ -344,41 +373,72 @@ class Guru extends BaseController
     }
 
     // Tambahkan fungsi di Guru.php untuk mengirim Email ke Siswa
-public function kirim_notifikasi_email($id_siswa, $tanggal, $catatan) 
-{
-    $db = \Config\Database::connect();
-    $siswa = $db->table('pengguna')->where('id_pengguna', $id_siswa)->get()->getRowArray();
-    
-    $email = \Config\Services::email();
-    $email->setTo($siswa['email']);
-    $email->setSubject('Undangan Konseling BK - CyberGuard');
-    $email->setMessage("Halo {$siswa['nama_lengkap']}, Anda dijadwalkan untuk konseling BK pada {$tanggal}. Catatan: {$catatan}. Mohon hadir tepat waktu.");
-    
-    return $email->send();
-}
+    public function kirim_notifikasi_email($id_siswa, $tanggal, $catatan) 
+    {
+        $db = \Config\Database::connect();
+        $siswa = $db->table('pengguna')->where('id_pengguna', $id_siswa)->get()->getRowArray();
+        
+        if (!$siswa || empty($siswa['email'])) return false;
 
-// Update fungsi simpan_jadwal_konseling
-public function simpan_jadwal_konseling()
-{
-    $this->cekAkses();
-    $db = \Config\Database::connect();
-    
-    $id_siswa = $this->request->getPost('id_siswa');
-    $tgl = $this->request->getPost('tanggal_konseling');
-    $cat = $this->request->getPost('catatan');
+        $email = \Config\Services::email();
+        $email->setFrom('ptriwindasari@gmail.com', 'CyberGuard System'); 
+        $email->setTo($siswa['email']);
+        $email->setSubject('Undangan Sesi Bimbingan & Konseling - CyberGuard');
+        
+        // WAJIB DITAMBAHKAN AGAR TAG HTML TERBACA
+        $email->setMailType('html'); 
 
-    $db->table('jadwal_konseling')->insert([
-        'id_guru' => session()->get('id_pengguna'),
-        'id_siswa' => $id_siswa,
-        'tanggal_konseling' => $tgl,
-        'catatan' => $cat,
-        'status' => 'direncanakan'
-    ]);
+        // Isi email dengan bahasa yang suportif dan formal
+        $pesanHTML = "
+        <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px;'>
+            <h2 style='color: #2b6cb0; border-bottom: 2px solid #2b6cb0; padding-bottom: 10px;'>Halo, " . esc($siswa['nama_lengkap']) . "</h2>
+            <p>Kami berharap pesan ini menemuimu dalam keadaan baik.</p>
+            <p>Di CyberGuard, kami percaya bahwa menjaga kesehatan mental sama pentingnya dengan menjaga kesehatan fisik. Berdasarkan evaluasi dari aktivitas belajarmu baru-baru ini, Guru Bimbingan dan Konseling (BK) ingin mengundangmu untuk sesi diskusi ringan dan tertutup.</p>
+            <p>Tujuan dari sesi ini adalah untuk mendengarkan, memberikan dukungan, dan memastikan kamu memiliki ruang yang aman untuk bercerita.</p>
+            <div style='background-color: #f7fafc; padding: 15px; border-radius: 8px; margin: 20px 0;'>
+                <p style='margin: 5px 0;'><strong>🗓️ Waktu:</strong> " . date('d F Y, H:i', strtotime($tanggal)) . " WIB</p>
+                <p style='margin: 5px 0;'><strong>📍 Lokasi/Catatan:</strong> " . esc($catatan) . "</p>
+            </div>
+            <p>Kehadiranmu sangat berarti bagi kami. Jika kamu memiliki kendala terkait jadwal ini, jangan ragu untuk menemui Guru BK terkait.</p>
+            <br>
+            <p>Salam hangat,<br><strong>Tim Fasilitator CyberGuard</strong></p>
+        </div>";
+        
+        $email->setMessage($pesanHTML);
+        return $email->send();
+    }
 
-    // Otomatis kirim email
-    $this->kirim_notifikasi_email($id_siswa, $tgl, $cat);
-    
-    session()->setFlashdata('pesan', 'Jadwal tersimpan & email undangan telah dikirim ke siswa.');
-    return redirect()->to('/guru/intervensi_dini');
-}
+    // FUNGSI API WHATSAPP
+    private function kirim_notifikasi_wa($no_wa, $pesan) 
+    {
+        if (empty($no_wa)) return false;
+
+        $token = 'QuCu8CKf2s3aJ9GhGhM5'; // Ganti dengan Token Fonnte
+        
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.fonnte.com/send',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => array(
+                'target' => $no_wa,
+                'message' => $pesan,
+                'countryCode' => '62', // Kode negara Indonesia
+            ),
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: ' . $token
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        return $response;
+    }
+
+
 }

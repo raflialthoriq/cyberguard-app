@@ -47,7 +47,6 @@
                 <p class="text-teal-600 font-bold text-sm"><?= esc(session()->get('nama_lengkap') ?? 'Bapak/Ibu Guru') ?></p>
             </div>
         </div>
-        <a href="/auth/logout" class="text-red-500 font-bold text-xs px-4 py-2 neu-pressed rounded-full hover:text-red-700 transition">Logout</a>
     </div>
 
     <!-- Ringkasan Statistik Agregat (Card View) -->

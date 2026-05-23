@@ -25,6 +25,9 @@ $routes->post('/auth/proses_ganti_password', 'Auth::proses_ganti_password');
 
 $routes->get('/auth/logout', 'Auth::logout');
 
+$routes->get('/auth/verifikasi_otp', 'Auth::verifikasi_otp');
+$routes->post('/auth/proses_verifikasi_otp', 'Auth::proses_verifikasi_otp');
+
 // Rute Dashboard / Beranda Admin
 $routes->get('/admin/beranda', 'Admin::beranda');
 

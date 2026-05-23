@@ -13,7 +13,6 @@
             <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Manajemen Ruang Kelas 👥</h1>
             <p class="text-xs font-bold text-gray-500 mt-1">Kontrol penuh validitas rute kode undangan bimbingan.</p>
         </div>
-        <a href="/guru/beranda" class="neu-flat px-4 py-2 rounded-xl text-xs font-bold text-gray-500">⬅️ Beranda</a>
     </div>
 
     <?php if(session()->getFlashdata('pesan')): ?>

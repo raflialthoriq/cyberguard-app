@@ -12,7 +12,6 @@
             <h1 class="text-2xl font-black text-gray-800">Laporan & Evaluasi 📄</h1>
             <p class="text-xs text-gray-500 font-bold mt-1">Sajian data analitik akurat berdasarkan relasi bimbingan kelas Anda.</p>
         </div>
-        <a href="/guru/beranda" class="neu-flat px-4 py-2 rounded-xl text-xs font-bold text-gray-500">⬅️ Beranda</a>
     </div>
 
     <div class="neu-flat p-6 rounded-3xl mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
