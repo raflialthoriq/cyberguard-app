@@ -40,6 +40,7 @@ $routes->get('/admin/tambah_modul', 'Admin::tambah_modul');
 $routes->post('/admin/simpan_modul', 'Admin::simpan_modul');
 $routes->get('/admin/dashboard', 'Admin::kelola_modul');
 $routes->get('/admin/ekspor_riset', 'Admin::ekspor_riset');
+$routes->get('/admin/unduh_data/(:segment)/(:segment)', 'Admin::unduh_data/$1/$2');
 
 // CRUD Modul (Lanjutan: Edit & Delete)
 $routes->get('/admin/edit_modul/(:num)', 'Admin::edit_modul/$1');

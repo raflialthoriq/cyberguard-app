@@ -74,26 +74,27 @@
         </div>
     </div>
 
-    <!-- Area Grafik Mini (Placeholder Data) -->
-    <div class="neu-flat p-6 rounded-3xl w-full mb-8">
-        <h2 class="font-bold text-gray-700 mb-4 flex items-center text-sm md:text-base">
-            📈 Aktivitas Harian Siswa Minggu Ini
-        </h2>
+    <div class="neu-flat p-5 rounded-3xl mb-8">
+    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Aktivitas Belajar Siswa Minggu Ini</h3>
+    <div class="flex items-end justify-between h-40 pt-4 px-2">
+        <?php 
+        // Cari nilai tertinggi untuk kalkulasi skala persentase grafik
+        $max_value = max(array_column($aktivitas_harian, 'jumlah'));
+        if($max_value == 0) $max_value = 1; 
         
-        <!-- Placeholder Grafik Batang Sederhana (Akan dibuat dinamis nanti) -->
-        <div class="h-40 flex items-end justify-between space-x-2 border-b-2 border-gray-300 pb-2">
-            <div class="w-full bg-blue-200 rounded-t-md h-[20%] neu-pressed"></div>
-            <div class="w-full bg-blue-300 rounded-t-md h-[40%] neu-pressed"></div>
-            <div class="w-full bg-blue-400 rounded-t-md h-[70%] neu-pressed"></div>
-            <div class="w-full bg-blue-500 rounded-t-md h-[50%] neu-pressed"></div>
-            <div class="w-full bg-teal-400 rounded-t-md h-[85%] neu-pressed"></div>
-            <div class="w-full bg-teal-500 rounded-t-md h-[30%] neu-pressed"></div>
-            <div class="w-full bg-gray-300 rounded-t-md h-[10%] neu-pressed"></div>
-        </div>
-        <div class="flex justify-between text-[10px] md:text-xs font-bold text-gray-500 mt-2 px-1">
-            <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>
-        </div>
+        foreach($aktivitas_harian as $act): 
+            $height_percentage = ($act['jumlah'] / $max_value) * 100;
+            // Set minimal tinggi 8% agar batang tetap terlihat estetik walaupun bernilai 0
+            if($height_percentage < 8) $height_percentage = 8; 
+        ?>
+            <div class="flex flex-col items-center w-1/7 h-full justify-end">
+                <span class="text-[9px] font-black text-indigo-600 mb-1"><?= $act['jumlah'] ?>x</span>
+                <div class="w-6 md:w-8 bg-gradient-to-t from-indigo-500 to-purple-500 rounded-t-lg transition-all duration-500 shadow-md" style="height: <?= $height_percentage ?>%"></div>
+                <span class="text-[10px] font-bold text-gray-400 mt-2"><?= $act['hari'] ?></span>
+            </div>
+        <?php endforeach; ?>
     </div>
+</div>
 
 </body>
 </html>

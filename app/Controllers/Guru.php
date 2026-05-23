@@ -19,10 +19,8 @@ class Guru extends BaseController
         $db = \Config\Database::connect();
         $id_guru = session()->get('id_pengguna');
 
-        // 1. Total Siswa Berdasarkan Relasi ID Guru Bimbingan
         $total_siswa = $db->table('pengguna')->where(['peran' => 'siswa', 'id_guru' => $id_guru, 'status_aktif' => 1])->countAllResults();
         
-        // 2. Siswa Perlu Perhatian Berdasarkan Relasi ID Guru
         $batas_waktu = date('Y-m-d H:i:s', strtotime('-5 days'));
         $siswa_perhatian = $db->table('pengguna')
                               ->where('peran', 'siswa')
@@ -41,22 +39,22 @@ class Guru extends BaseController
             $rata_progres = round(($total_selesai / ($total_siswa * $total_modul)) * 100);
         }
 
-        // 3. Grafik Aktivitas Harian Siswa Minggu Ini (Dinamis Nyata dari Progres & Simulasi)
-        $aktivitas_minggu_ini = [];
+        // PEMBARUAN: Hitung Aktivitas Real-Time 7 Hari Terakhir untuk Grafik Batang
+        $aktivitas_harian = [];
         for ($i = 6; $i >= 0; $i--) {
             $tanggal_target = date('Y-m-d', strtotime("-$i days"));
-            $nama_hari = date('D', strtotime($tanggal_target));
+            $hari_nama = date('D', strtotime($tanggal_target));
             
-            $aktif_hari_ini = $db->query("
+            $jumlah_aktif = $db->query("
                 SELECT COUNT(DISTINCT ps.id_pengguna) as total 
-                FROM progres_siswa ps 
+                FROM progres_siswa ps
                 JOIN pengguna p ON ps.id_pengguna = p.id_pengguna
-                WHERE p.id_guru = ? AND (DATE(ps.tanggal_selesai) = ? )
+                WHERE p.id_guru = ? AND DATE(ps.tanggal_selesai) = ?
             ", [$id_guru, $tanggal_target])->getRowArray()['total'] ?? 0;
 
-            $aktivitas_minggu_ini[] = [
-                'hari' => $nama_hari,
-                'jumlah' => $aktif_hari_ini
+            $aktivitas_harian[] = [
+                'hari' => $hari_nama,
+                'jumlah' => (int)$jumlah_aktif
             ];
         }
 
@@ -64,8 +62,50 @@ class Guru extends BaseController
             'total_siswa' => $total_siswa,
             'siswa_perhatian' => $siswa_perhatian,
             'rata_progres' => $rata_progres,
-            'aktivitas_minggu_ini' => $aktivitas_minggu_ini
+            'aktivitas_harian' => $aktivitas_harian
         ]);
+    }
+
+    public function simpan_kelas()
+    {
+        $this->cekAkses();
+        $db = \Config\Database::connect();
+        
+        $kode_kelas = 'CG-' . strtoupper(substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 4));
+        
+        $db->table('kelas')->insert([
+            'id_guru'      => session()->get('id_pengguna'),
+            'nama_kelas'   => $this->request->getPost('nama_kelas'),
+            'kode_kelas'   => $kode_kelas,
+            'status_kelas' => 'buka'
+        ]);
+
+        session()->setFlashdata('pesan', 'Ruang kelas baru berhasil diterbitkan.');
+        return redirect()->to('/guru/manajemen_kelas');
+    }
+
+    public function refresh_kode_kelas($id_kelas)
+    {
+        $this->cekAkses();
+        $db = \Config\Database::connect();
+        $kode_baru = 'CG-' . strtoupper(substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 4));
+        
+        $db->table('kelas')->where(['id_kelas' => $id_kelas, 'id_guru' => session()->get('id_pengguna')])->update(['kode_kelas' => $kode_baru]);
+        session()->setFlashdata('pesan', 'Kode undangan kelas berhasil diperbarui menjadi: ' . $kode_baru);
+        return redirect()->to('/guru/manajemen_kelas');
+    }
+
+    public function tutup_kelas($id_kelas)
+    {
+        $this->cekAkses();
+        $db = \Config\Database::connect();
+        
+        $kelas = $db->table('kelas')->where(['id_kelas' => $id_kelas, 'id_guru' => session()->get('id_pengguna')])->get()->getRowArray();
+        $status_baru = ($kelas['status_kelas'] === 'buka') ? 'tutup' : 'buka';
+        
+        $db->table('kelas')->where('id_kelas', $id_kelas)->update(['status_kelas' => $status_baru]);
+        session()->setFlashdata('pesan', 'Akses pendaftaran kelas berhasil diubah menjadi: di-' . $status_baru);
+        return redirect()->to('/guru/manajemen_kelas');
     }
 
     public function total_siswa_aktif()
@@ -245,7 +285,7 @@ class Guru extends BaseController
         
         // 3. Eksekusi Notifikasi WhatsApp
         if (!empty($siswa['no_wa'])) {
-            $pesanWA = "*Panggilan Bimbingan CyberGuard* 🚨\n\nHalo *{$siswa['nama_lengkap']}*,\nGuru Bimbingan & Konseling (BK) mengundangmu untuk sesi diskusi pada:\n\n🗓️ Waktu: *" . date('d F Y, H:i', strtotime($tgl)) . " WIB*\n📍 Lokasi/Catatan: *{$cat}*\n\nKehadiranmu sangat berarti. Kami siap mendengarkanmu tanpa menghakimi. Tetap semangat!";
+            $pesanWA = "*Panggilan Bimbingan CyberGuard* 🚨\n\nHalo *{$siswa['nama_lengkap']}*,\nKami berharap pesan ini menemuimu dalam keadaan baik. Di CyberGuard, kami percaya bahwa menjaga kesehatan mental sama pentingnya dengan menjaga kesehatan fisik. Berdasarkan evaluasi dari aktivitas belajarmu baru-baru ini, Guru Bimbingan dan Konseling (BK) ingin mengundangmu untuk sesi diskusi ringan dan tertutup pada:\n\n🗓️ Waktu: *" . date('d F Y, H:i', strtotime($tgl)) . " WIB*\n📍 Lokasi/Catatan: *{$cat}*\n\nTujuan dari sesi ini adalah untuk mendengarkan, memberikan dukungan, dan memastikan kamu memiliki ruang yang aman untuk bercerita. Kehadiranmu sangat berarti bagi kami. Jika kamu memiliki kendala terkait jadwal ini, jangan ragu untuk menemui Guru BK terkait. \nTetap semangat!";
             
             $this->kirim_notifikasi_wa($siswa['no_wa'], $pesanWA);
         }
@@ -257,14 +297,14 @@ class Guru extends BaseController
     // ==========================================
     // INTEGRASI LAPORAN & EKSPOR DATA RIIL (AKURAT)
     // ==========================================
-    public function laporan_cepat() 
+ public function laporan_cepat() 
     {
         $this->cekAkses();
         $db = \Config\Database::connect();
         $id_guru = session()->get('id_pengguna');
 
         $filter_kelas = $this->request->getGet('kelas');
-        $filter_waktu = $this->request->getGet('waktu');
+        $filter_waktu = $this->request->getGet('waktu'); // format: YYYY-MM
 
         $data['daftar_kelas'] = $db->table('kelas')->where('id_guru', $id_guru)->get()->getResultArray();
         
@@ -272,33 +312,41 @@ class Guru extends BaseController
         if (!empty($filter_kelas)) $builder->where('id_kelas', $filter_kelas);
         $siswa_list = $builder->get()->getResultArray();
 
-        $data_laporan = [];
+        $laporan = [];
         foreach($siswa_list as $s) {
             $id_s = $s['id_pengguna'];
             
-            $q_progres = "SELECT AVG(skor_kuis) as rata_kuis, COUNT(id_progres) as total_modul FROM progres_siswa WHERE id_pengguna = $id_s AND status_modul='selesai'";
-            if(!empty($filter_waktu)) $q_progres .= " AND tanggal_selesai LIKE '$filter_waktu%'";
-            $stat_modul = $db->query($q_progres)->getRowArray();
+            // Perbaikan Query: Menyaring progres belajar secara akurat berdasarkan parameter bulan/tahun
+            $q_modul = "SELECT AVG(skor_kuis) as rata, COUNT(id_progres) as total FROM progres_siswa WHERE id_pengguna = ? AND status_modul='selesai'";
+            $params_modul = [$id_s];
+            if (!empty($filter_waktu)) {
+                $q_modul .= " AND tanggal_selesai LIKE ?";
+                $params_modul[] = $filter_waktu . '%';
+            }
+            $stat_modul = $db->query($q_modul, $params_modul)->getRowArray();
 
-            $q_simulasi = "SELECT SUM(skor_kontrol_diri) as total_poin_cbt FROM riwayat_simulasi WHERE id_pengguna = $id_s";
-            if(!empty($filter_waktu)) $q_simulasi .= " AND tanggal_percobaan LIKE '$filter_waktu%'";
-            $stat_simulasi = $db->query($q_simulasi)->getRowArray();
+            $q_simulasi = "SELECT SUM(skor_kontrol_diri) as total_poin FROM riwayat_simulasi WHERE id_pengguna = ?";
+            $params_simulasi = [$id_s];
+            if (!empty($filter_waktu)) {
+                $q_simulasi .= " AND tanggal_percobaan LIKE ?";
+                $params_simulasi[] = $filter_waktu . '%';
+            }
+            $stat_simulasi = $db->query($q_simulasi, $params_simulasi)->getRowArray();
 
-            $data_laporan[] = [
+            $laporan[] = [
                 'nama' => $s['nama_lengkap'],
                 'email' => $s['email'],
                 'skor_mental' => $s['skor_kesejahteraan'],
-                'modul_selesai' => $stat_modul['total_modul'] ?? 0,
-                'rata_kuis' => round($stat_modul['rata_kuis'] ?? 0),
-                'poin_cbt' => $stat_simulasi['total_poin_cbt'] ?? 0,
+                'modul_selesai' => $stat_modul['total'] ?? 0,
+                'rata_kuis' => round($stat_modul['rata'] ?? 0),
+                'poin_cbt' => $stat_simulasi['total_poin'] ?? 0,
                 'login_terakhir' => $s['terakhir_login']
             ];
         }
 
-        $data['laporan'] = $data_laporan;
+        $data['laporan'] = $laporan;
         $data['filter_kelas'] = $filter_kelas;
         $data['filter_waktu'] = $filter_waktu;
-
         return view('guru/laporan_cepat', $data);
     }
 
@@ -409,11 +457,15 @@ class Guru extends BaseController
     }
 
     // FUNGSI API WHATSAPP
+ // ==========================================
+    // FUNGSI PENEMBAK API WHATSAPP (FONNTE)
+    // ==========================================
     private function kirim_notifikasi_wa($no_wa, $pesan) 
     {
         if (empty($no_wa)) return false;
 
-        $token = 'QuCu8CKf2s3aJ9GhGhM5'; // Ganti dengan Token Fonnte
+        // PASTIKAN TOKEN INI SUDAH DIGANTI DENGAN TOKEN ASLI MILIKMU DARI DASHBOARD FONNTE
+        $token = 'SubHsSjfWkd7bBvURMLB'; 
         
         $curl = curl_init();
         curl_setopt_array($curl, array(
@@ -421,21 +473,36 @@ class Guru extends BaseController
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
+            CURLOPT_TIMEOUT => 30, // Beri waktu toleransi 30 detik
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => array(
                 'target' => $no_wa,
                 'message' => $pesan,
-                'countryCode' => '62', // Kode negara Indonesia
+                'countryCode' => '62', // Memaksa format Indonesia
             ),
             CURLOPT_HTTPHEADER => array(
                 'Authorization: ' . $token
             ),
+            // ========================================================
+            // BARIS WAJIB UNTUK XAMPP/LOCALHOST AGAR HTTPS TIDAK DIBLOKIR
+            // ========================================================
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
         ));
 
         $response = curl_exec($curl);
+        
+        // PENCATATAN ERROR (DEBUGGER)
+        if (curl_errno($curl)) {
+            $error_msg = curl_error($curl);
+            log_message('error', 'Fonnte cURL Gagal: ' . $error_msg);
+        } else {
+            // Catat balasan dari Fonnte (Bisa dilihat di folder writable/logs/)
+            log_message('info', 'Fonnte Response: ' . $response);
+        }
+
         curl_close($curl);
         return $response;
     }

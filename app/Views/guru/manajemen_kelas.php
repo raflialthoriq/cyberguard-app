@@ -41,12 +41,17 @@
                             <span class="px-2 py-0.5 text-[9px] font-black uppercase rounded <?= $k['status_kelas']=='buka' ? 'bg-green-100 text-green-600':'bg-red-100 text-red-600' ?>"><?= $k['status_kelas'] ?></span>
                         </div>
 
+                       
                         <div class="my-4 neu-pressed p-3 rounded-2xl flex justify-between items-center bg-gray-50/10">
-                            <span class="text-[10px] font-mono tracking-widest font-black text-blue-600"><?= esc($k['kode_kelas']) ?></span>
-                            <?php if($k['status_kelas'] == 'buka'): ?>
-                                <a href="/guru/refresh_kode_kelas/<?= $k['id_kelas'] ?>" class="text-[9px] bg-white text-gray-600 px-2 py-1 rounded-lg font-bold shadow-sm hover:bg-gray-100">🔄 Acak Kode</a>
-                            <?php endif; ?>
-                        </div>
+    <span id="kode_<?= $k['id_kelas'] ?>" class="text-xs font-mono tracking-widest font-black text-blue-600"><?= esc($k['kode_kelas']) ?></span>
+    <div class="flex gap-1">
+        <button onclick="navigator.clipboard.writeText(document.getElementById('kode_<?= $k['id_kelas'] ?>').innerText); alert('Kode kelas <?= esc($k['nama_kelas']) ?> berhasil disalin ke papan klip!');" class="text-[9px] bg-white text-blue-600 px-2.5 py-1 rounded-lg font-bold shadow-sm border border-blue-200">Salin</button>
+        
+        <?php if($k['status_kelas'] == 'buka'): ?>
+            <a href="/guru/refresh_kode_kelas/<?= $k['id_kelas'] ?>" class="text-[9px] bg-white text-gray-600 px-2 py-1 rounded-lg font-bold shadow-sm hover:bg-gray-100">🔄 Acak Kode</a>
+        <?php endif; ?>
+    </div>
+</div>
 
                         <div class="space-y-3 pt-2 border-t border-gray-300/40">
                             <div class="flex justify-between text-[10px] font-bold">

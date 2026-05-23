@@ -17,31 +17,39 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
         
-        <div class="neu-flat p-6 rounded-3xl text-center flex flex-col items-center border-t-4 border-blue-400">
-            <span class="text-5xl mb-4 drop-shadow-md">📚</span>
-            <h2 class="font-extrabold text-gray-800 mb-2">Data Progres Modul</h2>
-            <p class="text-[10px] font-bold text-gray-500 mb-6">Riwayat penyelesaian modul & skor kuis micro-learning.</p>
-            <a href="/admin/unduh_csv/modul" class="w-full bg-blue-500 text-white font-extrabold py-3 rounded-xl shadow-lg hover:bg-blue-600 transition active:scale-95 text-xs">Unduh CSV Modul</a>
-        </div>
 
-        <div class="neu-flat p-6 rounded-3xl text-center flex flex-col items-center border-t-4 border-orange-400">
-            <span class="text-5xl mb-4 drop-shadow-md">🎮</span>
-            <h2 class="font-extrabold text-gray-800 mb-2">Data Simulasi CBT</h2>
-            <p class="text-[10px] font-bold text-gray-500 mb-6">Poin keputusan asertif/reaktif dari skenario *visual novel*.</p>
-            <a href="/admin/unduh_csv/simulasi" class="w-full bg-orange-500 text-white font-extrabold py-3 rounded-xl shadow-lg hover:bg-orange-600 transition active:scale-95 text-xs">Unduh CSV Simulasi</a>
-        </div>
-
-        <div class="neu-flat p-6 rounded-3xl text-center flex flex-col items-center border-t-4 border-purple-400">
-            <span class="text-5xl mb-4 drop-shadow-md">📝</span>
-            <h2 class="font-extrabold text-gray-800 mb-2">Data Kuesioner/SUS</h2>
-            <p class="text-[10px] font-bold text-gray-500 mb-6">Jawaban instrumen Pre/Post-Test & pengukuran *Usability*.</p>
-            <a href="/admin/unduh_csv/kuesioner" class="w-full bg-purple-500 text-white font-extrabold py-3 rounded-xl shadow-lg hover:bg-purple-600 transition active:scale-95 text-xs">Unduh CSV Kuesioner</a>
-        </div>
-
+        <div class="neu-flat p-6 rounded-3xl text-center border-t-4 border-blue-400">
+    <span class="text-4xl mb-2 block">📚</span>
+    <h2 class="font-extrabold text-gray-800 text-sm mb-4">Data Progres Modul</h2>
+     <p class="text-[10px] font-bold text-gray-500 mb-6">Riwayat penyelesaian modul & skor kuis micro-learning.</p>
+    <div class="flex flex-col gap-1.5">
+        <a href="/admin/unduh_data/modul/excel" class="bg-green-600 text-white text-[11px] font-bold py-2 rounded-xl shadow">Unduh Berkas Excel (.xls)</a>
+        <a href="/admin/unduh_data/modul/pdf" target="_blank" class="bg-red-600 text-white text-[11px] font-bold py-2 rounded-xl shadow">Cetak Dokumen PDF</a>
+        <a href="/admin/unduh_data/modul/csv" class="bg-gray-600 text-white text-[11px] font-bold py-2 rounded-xl shadow">Unduh Dokumen CSV</a>
     </div>
+</div>
 
-    <div class="mt-8 p-5 rounded-2xl neu-pressed border-l-4 border-gray-400">
-        <p class="text-xs font-bold text-gray-500"><span class="text-gray-700 font-extrabold">Catatan Etika Penelitian:</span> Sesuai standar privasi, semua *file* CSV yang diekspor melalui halaman ini telah dianonimkan (Personally Identifiable Information seperti Nama dan Email dihapus dan diganti dengan ID Hash).</p>
+ <div class="neu-flat p-6 rounded-3xl text-center border-t-4 border-blue-400">
+    <span class="text-4xl mb-2 block">🎮</span>
+    <h2 class="font-extrabold text-gray-800 text-sm mb-4">Data Simulasi CBT</h2>
+     <p class="text-[10px] font-bold text-gray-500 mb-6">Riwayat penyelesaian modul & skor kuis micro-learning.</p>
+    <div class="flex flex-col gap-1.5">
+        <a href="/admin/unduh_data/simulasi/excel" class="bg-green-600 text-white text-[11px] font-bold py-2 rounded-xl shadow">Unduh Berkas Excel (.xls)</a>
+        <a href="/admin/unduh_data/simulasi/pdf" target="_blank" class="bg-red-600 text-white text-[11px] font-bold py-2 rounded-xl shadow">Cetak Dokumen PDF</a>
+        <a href="/admin/unduh_data/simulasi/csv" class="bg-gray-600 text-white text-[11px] font-bold py-2 rounded-xl shadow">Unduh Dokumen CSV</a>
+    </div>
+</div>
+
+<div class="neu-flat p-6 rounded-3xl text-center border-t-4 border-blue-400">
+    <span class="text-4xl mb-2 block">📝</span>
+    <h2 class="font-extrabold text-gray-800 text-sm mb-4">Data Kuesioner/SUS</h2>
+     <p class="text-[10px] font-bold text-gray-500 mb-6">Riwayat penyelesaian modul & skor kuis micro-learning.</p>
+    <div class="flex flex-col gap-1.5">
+        <a href="/admin/unduh_data/kuesioner/excel" class="bg-green-600 text-white text-[11px] font-bold py-2 rounded-xl shadow">Unduh Berkas Excel (.xls)</a>
+        <a href="/admin/unduh_data/kuesioner/pdf" target="_blank" class="bg-red-600 text-white text-[11px] font-bold py-2 rounded-xl shadow">Cetak Dokumen PDF</a>
+        <a href="/admin/unduh_data/kuesioner/csv" class="bg-gray-600 text-white text-[11px] font-bold py-2 rounded-xl shadow">Unduh Dokumen CSV</a>
+    </div>
+</div>
     </div>
 
         <!-- ============================================================== -->

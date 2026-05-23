@@ -860,41 +860,62 @@ class Admin extends BaseController
         return view('admin/ekspor_riset');
     }
 
-    public function unduh_csv($kategori)
+ // ===================================================================
+    // DATA RISET TRANSPARAN DAN INTEGRASI MULTI-FORMAT UNTUK ADMIN
+    // ===================================================================
+    public function unduh_data($kategori, $format)
     {
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
         
-        $filename = "CyberGuard_DataAnonim_{$kategori}_" . date('Y-m-d') . ".csv";
-        
-        // Memaksa browser untuk mengunduh file
-        header("Content-Description: File Transfer");
-        header("Content-Disposition: attachment; filename=$filename");
-        header("Content-Type: text/csv; charset=UTF-8");
-        
-        $file = fopen('php://output', 'w');
-        // Tambahkan BOM agar karakter terbaca rapi saat dibuka di Microsoft Excel
-        fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-        
+        $filename = "CyberGuard_MasterData_{$kategori}_" . date('Y-m-d');
+
+        // Mengambil berkas data asli tanpa modifikasi anonimitas hash
         if ($kategori === 'modul') {
-            fputcsv($file, ['ID_Anonim', 'Asal_Sekolah', 'ID_Modul', 'Status', 'Skor_Kuis', 'Waktu_Selesai']);
-            // Menggunakan SUBSTRING(MD5(id)) untuk menyembunyikan identitas asli siswa
-            $data = $db->query("SELECT SUBSTRING(MD5(p.id_pengguna), 1, 10) as id_anonim, p.nama_sekolah, ps.id_modul, ps.status_modul, ps.skor_kuis, ps.tanggal_selesai FROM progres_siswa ps JOIN pengguna p ON ps.id_pengguna = p.id_pengguna WHERE p.peran = 'siswa'")->getResultArray();
-            foreach ($data as $row) fputcsv($file, $row);
-            
+            $headers = ['ID Pengguna', 'Nama Lengkap', 'Sekolah', 'ID Modul', 'Status', 'Skor Kuis', 'Tanggal Selesai'];
+            $data = $db->query("SELECT p.id_pengguna, p.nama_lengkap, p.nama_sekolah, ps.id_modul, ps.status_modul, ps.skor_kuis, ps.tanggal_selesai FROM progres_siswa ps JOIN pengguna p ON ps.id_pengguna = p.id_pengguna WHERE p.peran = 'siswa'")->getResultArray();
         } elseif ($kategori === 'simulasi') {
-            fputcsv($file, ['ID_Anonim', 'Asal_Sekolah', 'ID_Skenario', 'Skor_Keputusan', 'Waktu_Percobaan']);
-            $data = $db->query("SELECT SUBSTRING(MD5(p.id_pengguna), 1, 10) as id_anonim, p.nama_sekolah, rs.id_skenario, rs.skor_kontrol_diri, rs.tanggal_percobaan FROM riwayat_simulasi rs JOIN pengguna p ON rs.id_pengguna = p.id_pengguna WHERE p.peran = 'siswa'")->getResultArray();
-            foreach ($data as $row) fputcsv($file, $row);
-            
-        } elseif ($kategori === 'kuesioner') {
-            fputcsv($file, ['ID_Anonim', 'Asal_Sekolah', 'ID_Kuesioner', 'ID_Soal', 'Jawaban_Siswa', 'Waktu_Isi']);
-            $data = $db->query("SELECT SUBSTRING(MD5(p.id_pengguna), 1, 10) as id_anonim, p.nama_sekolah, pk.id_kuesioner, jk.id_soal, jk.jawaban_teks, pk.tanggal_isi FROM jawaban_kuesioner jk JOIN partisipasi_kuesioner pk ON jk.id_partisipasi = pk.id_partisipasi JOIN pengguna p ON pk.id_pengguna = p.id_pengguna WHERE p.peran = 'siswa'")->getResultArray();
-            foreach ($data as $row) fputcsv($file, $row);
+            $headers = ['ID Pengguna', 'Nama Lengkap', 'Sekolah', 'ID Skenario', 'Skor Kontrol Diri', 'Tanggal Percobaan'];
+            $data = $db->query("SELECT p.id_pengguna, p.nama_lengkap, p.nama_sekolah, rs.id_skenario, rs.skor_kontrol_diri, rs.tanggal_percobaan FROM riwayat_simulasi rs JOIN pengguna p ON rs.id_pengguna = p.id_pengguna WHERE p.peran = 'siswa'")->getResultArray();
+        } else {
+            $headers = ['ID Pengguna', 'Nama Lengkap', 'Sekolah', 'ID Kuesioner', 'ID Soal', 'Jawaban', 'Tanggal Isi'];
+            $data = $db->query("SELECT p.id_pengguna, p.nama_lengkap, p.nama_sekolah, pk.id_kuesioner, jk.id_soal, jk.jawaban_teks, pk.tanggal_isi FROM jawaban_kuesioner jk JOIN partisipasi_kuesioner pk ON jk.id_partisipasi = pk.id_partisipasi JOIN pengguna p ON pk.id_pengguna = p.id_pengguna WHERE p.peran = 'siswa'")->getResultArray();
         }
+
+        if (empty($data)) {
+            exit("Belum ada rekaman data di dalam sistem untuk kategori ini.");
+        }
+
+        // EKSPOR FORMAT CSV
+        if ($format === 'csv') {
+            header("Content-Disposition: attachment; filename=$filename.csv");
+            header("Content-Type: text/csv; charset=UTF-8");
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            fputcsv($file, $headers);
+            foreach ($data as $row) fputcsv($file, $row);
+            fclose($file); exit;
+        } 
         
-        fclose($file);
-        exit;
+        // EKSPOR FORMAT EXCEL (HTML TABLE NATIVE STRUCTURE)
+        if ($format === 'excel') {
+            header("Content-Type: application/vnd.ms-excel");
+            header("Content-Disposition: attachment; filename=$filename.xls");
+            echo "<table border='1'><tr style='background:#f4f4f4;'>";
+            foreach ($headers as $h) echo "<th>$h</th>";
+            echo "</tr>";
+            foreach ($data as $row) {
+                echo "<tr>";
+                foreach ($row as $v) echo "<td>$v</td>";
+                echo "</tr>";
+            }
+            echo "</table>"; exit;
+        }
+
+        // EKSPOR FORMAT PDF VIA LAYOUT CETAK BROWSER NATIVE
+        if ($format === 'pdf') {
+            return view('guru/laporan_cetak_pdf', ['data' => $data]);
+        }
     }
 
     // ==========================================
