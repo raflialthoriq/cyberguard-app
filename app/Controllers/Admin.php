@@ -896,4 +896,146 @@ class Admin extends BaseController
         fclose($file);
         exit;
     }
+
+    // ==========================================
+    // CMS KELOLA PANDUAN GURU/FASILITATOR
+    // ==========================================
+    public function kelola_panduan()
+    {
+        if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
+        $db = \Config\Database::connect();
+        $data['daftar_panduan'] = $db->table('panduan_guru')->orderBy('kode_panduan', 'ASC')->get()->getResultArray();
+        return view('admin/kelola_panduan', $data);
+    }
+
+    public function simpan_panduan()
+    {
+        if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
+        $db = \Config\Database::connect();
+
+        $tipe_media = $this->request->getPost('tipe_media');
+        $url_youtube = $this->request->getPost('url_youtube');
+        $file_media = null;
+
+        // Mesin Pengunggah File (Hanya jika tipe medianya butuh file)
+        if (in_array($tipe_media, ['gambar', 'dokumen', 'audio'])) {
+            $file = $this->request->getFile('file_media');
+            if ($file && $file->isValid() && !$file->hasMoved()) {
+                $newName = $file->getRandomName();
+                // Simpan file ke dalam public/uploads/panduan/
+                $file->move('uploads/panduan/', $newName);
+                $file_media = $newName;
+            }
+        }
+
+        $db->table('panduan_guru')->insert([
+            'kode_panduan'   => $this->request->getPost('kode_panduan'),
+            'judul_panduan'  => $this->request->getPost('judul_panduan'),
+            'deskripsi'      => $this->request->getPost('deskripsi'),
+            'konten_panduan' => $this->request->getPost('konten_panduan'),
+            'tipe_media'     => $tipe_media,
+            'file_media'     => $file_media,
+            'url_youtube'    => $url_youtube
+        ]);
+
+        session()->setFlashdata('pesan', 'Materi panduan interaktif berhasil diterbitkan untuk Guru BK.');
+        return redirect()->to('/admin/kelola_panduan');
+    }
+
+    public function edit_panduan($id_panduan)
+    {
+        if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
+        $db = \Config\Database::connect();
+        
+        $data['panduan'] = $db->table('panduan_guru')->where('id_panduan', $id_panduan)->get()->getRowArray();
+        return view('admin/edit_panduan', $data);
+    }
+
+    public function update_panduan()
+    {
+        if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
+        $db = \Config\Database::connect();
+
+        $id_panduan  = $this->request->getPost('id_panduan');
+        $tipe_media  = $this->request->getPost('tipe_media');
+        $url_youtube = $this->request->getPost('url_youtube');
+        $file_media  = $this->request->getPost('file_lama'); // Gunakan file lama sebagai default
+        
+        // Cek jika Admin mengunggah file media baru
+        if (in_array($tipe_media, ['gambar', 'dokumen', 'audio'])) {
+            $file = $this->request->getFile('file_media');
+            if ($file && $file->isValid() && !$file->hasMoved()) {
+                $newName = $file->getRandomName();
+                $file->move('uploads/panduan/', $newName);
+                $file_media = $newName; // Timpa nama file lama dengan yang baru
+            }
+        }
+
+        $db->table('panduan_guru')->where('id_panduan', $id_panduan)->update([
+            'kode_panduan'   => $this->request->getPost('kode_panduan'),
+            'judul_panduan'  => $this->request->getPost('judul_panduan'),
+            'deskripsi'      => $this->request->getPost('deskripsi'),
+            'konten_panduan' => $this->request->getPost('konten_panduan'),
+            'tipe_media'     => $tipe_media,
+            'file_media'     => $file_media,
+            'url_youtube'    => $url_youtube
+        ]);
+
+        session()->setFlashdata('pesan', 'Materi panduan berhasil diperbarui!');
+        return redirect()->to('/admin/kelola_panduan');
+    }
+
+    public function hapus_panduan($id_panduan)
+    {
+        if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
+        $db = \Config\Database::connect();
+        $db->table('panduan_guru')->where('id_panduan', $id_panduan)->delete();
+        
+        session()->setFlashdata('pesan', 'Materi panduan berhasil dihapus.');
+        return redirect()->to('/admin/kelola_panduan');
+    }
+
+    // ==========================================
+    // MODERASI JADWAL INTERVENSI GURU BK BY ADMIN
+    // ==========================================
+    public function kelola_intervensi()
+    {
+        if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
+        $db = \Config\Database::connect();
+        
+        $data['jadwal'] = $db->query("
+            SELECT jk.*, psis.nama_lengkap as nama_siswa, psis.nama_sekolah, pguru.nama_lengkap as nama_guru
+            FROM jadwal_konseling jk
+            JOIN pengguna psis ON jk.id_siswa = psis.id_pengguna
+            JOIN pengguna pguru ON jk.id_guru = pguru.id_pengguna
+            ORDER BY jk.tanggal_konseling DESC
+        ")->getResultArray();
+        
+        return view('admin/kelola_intervensi', $data);
+    }
+
+    public function update_intervensi()
+    {
+        if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
+        $db = \Config\Database::connect();
+        
+        $id_jadwal = $this->request->getPost('id_jadwal');
+        $db->table('jadwal_konseling')->where('id_jadwal', $id_jadwal)->update([
+            'tanggal_konseling' => $this->request->getPost('tanggal_konseling'),
+            'catatan' => $this->request->getPost('catatan')
+        ]);
+        
+        session()->setFlashdata('pesan', 'Jadwal intervensi berhasil disesuaikan oleh Admin.');
+        return redirect()->to('/admin/kelola_intervensi');
+    }
+
+    public function batal_intervensi($id_jadwal)
+    {
+        if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
+        $db = \Config\Database::connect();
+        
+        $db->table('jadwal_konseling')->where('id_jadwal', $id_jadwal)->update(['status' => 'dibatalkan']);
+        session()->setFlashdata('pesan', 'Jadwal konseling berhasil dibatalkan oleh Admin.');
+        return redirect()->to('/admin/kelola_intervensi');
+    }
 }

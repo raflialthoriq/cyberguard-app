@@ -54,7 +54,7 @@
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8">
         <!-- Card 1: Total Siswa -->
         <div class="neu-flat p-5 rounded-3xl flex flex-col justify-center items-center text-center">
-            <h3 class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Total Siswa Aktif</h3>
+            <a href="/guru/total_siswa_aktif" class="block cursor-pointer transition transform hover:scale-95"><h3 class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Total Siswa Aktif</h3></a>
            <span class="text-4xl font-black text-blue-600"><?= $total_siswa ?></span>
             <p class="text-[10px] text-gray-400 mt-2">Siswa terdaftar</p>
         </div>
@@ -68,9 +68,10 @@
 
         <!-- Card 3: Perlu Perhatian -->
         <div class="neu-flat p-5 rounded-3xl flex flex-col justify-center items-center text-center col-span-2 md:col-span-1">
-            <h3 class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Siswa Perlu Perhatian</h3>
+            <a href="/guru/siswa_perhatian" class="block cursor-pointer transition transform hover:scale-95"><h3 class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Siswa Perlu Perhatian</h3>
             <span class="text-4xl font-black text-red-500"><?= $siswa_perhatian ?></span>
-            <p class="text-[10px] text-gray-400 mt-2">Butuh intervensi dini</p>
+            <p class="text-[10px] text-gray-400 mt-2">Butuh intervensi dini</p></a>
+            
         </div>
     </div>
 

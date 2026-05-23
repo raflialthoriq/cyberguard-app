@@ -46,81 +46,26 @@
         </div>
     </div>
 
-    <!-- Konten Pustaka -->
-    <div class="space-y-6">
-        
-        <!-- Kategori 1: Reference Teaching -->
-        <div>
-            <h2 class="text-lg font-extrabold text-gray-700 mb-4 px-2">Reference Teaching</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <a href="#" class="neu-flat p-4 rounded-3xl flex items-center justify-between hover:text-orange-500 transition active:neu-pressed group">
-                    <div class="flex items-center space-x-3">
-                        <span class="text-3xl">📘</span>
-                        <div>
-                            <h3 class="font-bold text-sm text-gray-800 group-hover:text-orange-500">Panduan Memulai Program</h3>
-                            <p class="text-[10px] text-gray-400 font-bold mt-1">G1 - PDF (1.2 MB)</p>
-                        </div>
-                    </div>
-                    <span class="text-gray-400 font-bold text-xl">⬇️</span>
-                </a>
-                <a href="#" class="neu-flat p-4 rounded-3xl flex items-center justify-between hover:text-orange-500 transition active:neu-pressed group">
-                    <div class="flex items-center space-x-3">
-                        <span class="text-3xl">📊</span>
-                        <div>
-                            <h3 class="font-bold text-sm text-gray-800 group-hover:text-orange-500">Panduan Membaca Dashboard</h3>
-                            <p class="text-[10px] text-gray-400 font-bold mt-1">G3 - PDF (2.5 MB)</p>
-                        </div>
-                    </div>
-                    <span class="text-gray-400 font-bold text-xl">⬇️</span>
-                </a>
+    <div class="space-y-4">
+    <?php foreach($daftar_panduan as $p): ?>
+        <div class="neu-flat p-5 rounded-2xl flex items-center justify-between group hover:bg-orange-50/20 transition">
+            <div class="flex items-center space-x-4">
+                <span class="text-3xl">📘</span>
+                <div>
+                    <span class="text-[10px] font-black text-orange-500 uppercase tracking-widest"><?= esc($p['kode_panduan']) ?> - Reference Material</span>
+                    <h3 class="font-bold text-sm text-gray-800 mt-0.5"><?= esc($p['judul_panduan']) ?></h3>
+                    <p class="text-xs text-gray-400 font-medium mt-1"><?= esc($p['deskripsi']) ?></p>
+                </div>
             </div>
+            <div class="flex gap-2 mt-3 md:mt-0">
+    <a href="/guru/baca_panduan/<?= $p['id_panduan'] ?>" class="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-sm hover:bg-indigo-700 transition flex items-center gap-1">
+        📖 Baca Langsung
+    </a>
+    <button onclick="alert('Mengunduh lampiran...')" class="neu-flat text-gray-600 font-bold text-xs px-3 py-2 rounded-xl">⬇️ PDF</button>
+</div>
         </div>
-
-        <!-- Kategori 2: Discussion Scenarios -->
-        <div>
-            <h2 class="text-lg font-extrabold text-gray-700 mb-4 px-2">Discussion Scenarios</h2>
-            <div class="grid grid-cols-1 gap-4">
-                <a href="#" class="neu-flat p-4 rounded-3xl flex items-center justify-between hover:text-orange-500 transition active:neu-pressed group border-l-4 border-orange-400">
-                    <div class="flex items-center space-x-3">
-                        <span class="text-3xl">🗣️</span>
-                        <div>
-                            <h3 class="font-bold text-sm text-gray-800 group-hover:text-orange-500">Skenario Diskusi: Cyberbullying</h3>
-                            <p class="text-[10px] text-gray-400 font-bold mt-1">G2 - Panduan Dialog Tanpa Menghakimi</p>
-                        </div>
-                    </div>
-                    <span class="text-gray-400 font-bold text-xl">⬇️</span>
-                </a>
-                <a href="#" class="neu-flat p-4 rounded-3xl flex items-center justify-between hover:text-orange-500 transition active:neu-pressed group border-l-4 border-teal-400">
-                    <div class="flex items-center space-x-3">
-                        <span class="text-3xl">🤝</span>
-                        <div>
-                            <h3 class="font-bold text-sm text-gray-800 group-hover:text-orange-500">Teknik Konseling Singkat</h3>
-                            <p class="text-[10px] text-gray-400 font-bold mt-1">G4 - Untuk Kasus Ringan (15 Menit)</p>
-                        </div>
-                    </div>
-                    <span class="text-gray-400 font-bold text-xl">⬇️</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Kategori 3: Presentation Materials -->
-        <div>
-            <h2 class="text-lg font-extrabold text-gray-700 mb-4 px-2">Presentation Materials</h2>
-            <div class="grid grid-cols-1 gap-4">
-                <a href="#" class="neu-flat p-4 rounded-3xl flex items-center justify-between hover:text-orange-500 transition active:neu-pressed group border-l-4 border-blue-400">
-                    <div class="flex items-center space-x-3">
-                        <span class="text-3xl">👨‍👩‍👧</span>
-                        <div>
-                            <h3 class="font-bold text-sm text-gray-800 group-hover:text-orange-500">Materi Presentasi Orang Tua</h3>
-                            <p class="text-[10px] text-gray-400 font-bold mt-1">G5 - Slide PPT & Tips Pengawasan</p>
-                        </div>
-                    </div>
-                    <span class="text-gray-400 font-bold text-xl">⬇️</span>
-                </a>
-            </div>
-        </div>
-
-    </div>
+    <?php endforeach; ?>
+</div>
 
 </body>
 </html>

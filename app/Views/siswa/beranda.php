@@ -89,6 +89,30 @@
                 <?php endif; ?>
             </div>
 
+            <?php 
+    $db = \Config\Database::connect();
+    $undangan = $db->query("SELECT jk.*, p.nama_lengkap as nama_guru FROM jadwal_konseling jk JOIN pengguna p ON jk.id_guru = p.id_pengguna WHERE jk.id_siswa = ? AND jk.status = 'direncanakan' ORDER BY jk.tanggal_konseling ASC LIMIT 1", [session()->get('id_pengguna')])->getRowArray();
+    if($undangan):
+    ?>
+        <div class="neu-flat p-4 rounded-2xl border-l-4 border-orange-500 bg-orange-100/30 my-5">
+            <h4 class="text-xs font-black text-orange-700 uppercase tracking-wider">🚨 Panggilan Konseling Terjadwal</h4>
+            <p class="text-xs font-bold text-gray-700 mt-1">Kamu dijadwalkan bertemu Guru BK: <span class="text-blue-600"><?= esc($undangan['nama_guru']) ?></span></p>
+            <p class="text-[10px] font-bold text-gray-500 mt-0.5">Waktu: <?= date('d M Y, H:i', strtotime($undangan['tanggal_konseling'])) ?> WIB (Catatan: <?= esc($undangan['catatan']) ?>)</p>
+        </div>
+    <?php endif; ?>
+
+    <div class="neu-flat p-6 rounded-3xl mt-6">
+    <h3 class="font-black text-gray-800 mb-4">Riwayat Konseling Saya</h3>
+    <?php 
+    $db = \Config\Database::connect();
+    $riwayat = $db->table('jadwal_konseling')->where('id_siswa', session()->get('id_pengguna'))->get()->getResultArray();
+    foreach($riwayat as $r): ?>
+        <div class="border-b py-2 text-xs font-bold">
+            <?= date('d M Y', strtotime($r['tanggal_konseling'])) ?> - <?= esc($r['catatan']) ?> 
+            <span class="text-blue-500">(Status: <?= $r['status'] ?>)</span>
+        </div>
+    <?php endforeach; ?>
+</div>
             <!-- Tips Hari Ini -->
             <div class="neu-pressed p-5 md:p-8 rounded-3xl relative overflow-hidden border-l-4 border-orange-400 flex flex-col justify-center">
                 <h3 class="text-sm md:text-base font-extrabold text-orange-500 mb-3 uppercase tracking-widest">💡 Tips Hari Ini</h3>

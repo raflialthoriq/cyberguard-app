@@ -20,6 +20,11 @@ class Siswa extends BaseController
         $db = \Config\Database::connect();
         $id_pengguna = session()->get('id_pengguna');
 
+        // Di dalam function beranda() Siswa
+$db = \Config\Database::connect();
+// Cari jadwal yang sudah lewat 1 hari
+$db->query("UPDATE jadwal_konseling SET status = 'selesai' WHERE id_siswa = ? AND tanggal_konseling < DATE_SUB(NOW(), INTERVAL 1 DAY)", [session()->get('id_pengguna')]);
+
         // Ambil Modul dan Kuesioner beserta status pengerjaannya
         $modul = $db->query("SELECT id_modul as id, urutan_modul as urutan, 'modul' as tipe, (SELECT status_modul FROM progres_siswa WHERE id_modul = modul_belajar.id_modul AND id_pengguna = ?) as status_modul FROM modul_belajar", [$id_pengguna])->getResultArray();
         
@@ -289,6 +294,10 @@ class Siswa extends BaseController
 
     public function proses_kuis($id_modul)
     {
+        // --- PASTIKAN BARIS INI ADA DI DALAM FUNCTION SEBELUM QUERY ---
+        $db = \Config\Database::connect(); 
+        $db->query("UPDATE pengguna SET total_poin = total_poin + 5 WHERE id_pengguna = ?", [$id_pengguna]);
+
         if (session()->get('peran') !== 'siswa') return redirect()->to('/auth');
 
         $soalModel = new SoalKuisModel();

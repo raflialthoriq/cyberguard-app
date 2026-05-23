@@ -61,6 +61,9 @@
                     <a href="/admin/kelola_tips" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
                         <span class="mr-3 text-lg">💡</span> Afirmasi
                     </a>
+                    <a href="/admin/kelola_panduan" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
+                        <span class="mr-3 text-lg">📚</span> Panduan 
+                    </a>
                 </div>
             </div>
             <!-- ========================================================= -->

@@ -97,6 +97,18 @@ $routes->get('/admin/hapus_tips/(:num)', 'Admin::hapus_tips/$1');
 $routes->get('/admin/ekspor_riset', 'Admin::ekspor_riset');
 $routes->get('/admin/unduh_csv/(:segment)', 'Admin::unduh_csv/$1');
 
+$routes->get('/admin/kelola_panduan', 'Admin::kelola_panduan');
+$routes->post('/admin/simpan_panduan', 'Admin::simpan_panduan');
+$routes->get('/admin/hapus_panduan/(:num)', 'Admin::hapus_panduan/$1');
+
+$routes->get('/admin/kelola_intervensi', 'Admin::kelola_intervensi');
+$routes->post('/admin/update_intervensi', 'Admin::update_intervensi');
+$routes->get('/admin/batal_intervensi/(:num)', 'Admin::batal_intervensi/$1');
+
+// CMS Kelola Panduan Guru - Edit & Update
+$routes->get('/admin/edit_panduan/(:num)', 'Admin::edit_panduan/$1');
+$routes->post('/admin/update_panduan', 'Admin::update_panduan');
+
 // ==========================================
 // RUTE GURU BK (Pemantauan CBT Siswa)
 // ==========================================
@@ -107,6 +119,13 @@ $routes->get('/guru/intervensi_dini', 'Guru::intervensi_dini');
 $routes->get('/guru/panduan_fasilitator', 'Guru::panduan_fasilitator');
 $routes->get('/guru/laporan_cepat', 'Guru::laporan_cepat');
 $routes->post('/guru/simpan_kelas', 'Guru::simpan_kelas');
+$routes->get('/guru/detail_kelas/(:num)', 'Guru::detail_kelas/$1');
+$routes->post('/guru/simpan_jadwal_konseling', 'Guru::simpan_jadwal_konseling');
+$routes->get('/guru/refresh_kode_kelas/(:num)', 'Guru::refresh_kode_kelas/$1');
+$routes->get('/guru/tutup_kelas/(:num)', 'Guru::tutup_kelas/$1');
+$routes->get('/guru/detail_siswa/(:num)', 'Guru::detail_siswa/$1');
+$routes->get('/guru/total_siswa_aktif', 'Guru::total_siswa_aktif');
+$routes->get('/guru/siswa_perhatian', 'Guru::siswa_perhatian');
 
 // Rute Siswa (Nanti akan kita tambahkan Filters/Middleware untuk keamanan)
 $routes->get('/siswa/beranda', 'Siswa::beranda');
@@ -140,3 +159,6 @@ $routes->post('/profil/update', 'Profil::update');
 $routes->post('/profil/gabung_kelas', 'Profil::gabung_kelas');
 $routes->get('/guru/intervensi_dini', 'Guru::intervensi_dini');
 $routes->get('/guru/panduan_fasilitator', 'Guru::panduan_fasilitator');
+// Rute Ekspor Laporan Guru
+$routes->get('/guru/ekspor_laporan/(:segment)', 'Guru::ekspor_laporan/$1');
+$routes->get('/guru/baca_panduan/(:num)', 'Guru::baca_panduan/$1');
