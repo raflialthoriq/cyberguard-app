@@ -30,8 +30,8 @@
 
         <form action="/auth/proses_verifikasi_otp" method="POST" class="space-y-6">
             <div>
-                <input type="kode_otp" name="kode_otp" placeholder="Kode OTP" class="neu-pressed w-full px-5 py-4 rounded-2xl focus:outline-none" required>
-            </div>
+    <input type="number" name="otp" placeholder="Masukkan 6 Digit OTP" class="neu-pressed w-full px-5 py-4 rounded-2xl focus:outline-none" required>
+</div>
             <button type="submit" class="neu-btn-blue w-full text-white font-bold py-4 rounded-2xl transition duration-300">
                 Verifikasi
             </button>

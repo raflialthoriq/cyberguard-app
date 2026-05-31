@@ -872,13 +872,13 @@ class Admin extends BaseController
 
         // Mengambil berkas data asli tanpa modifikasi anonimitas hash
         if ($kategori === 'modul') {
-            $headers = ['ID Pengguna', 'Nama Lengkap', 'Sekolah', 'ID Modul', 'Status', 'Skor Kuis', 'Tanggal Selesai'];
-            $data = $db->query("SELECT p.id_pengguna, p.nama_lengkap, p.nama_sekolah, ps.id_modul, ps.status_modul, ps.skor_kuis, ps.tanggal_selesai FROM progres_siswa ps JOIN pengguna p ON ps.id_pengguna = p.id_pengguna WHERE p.peran = 'siswa'")->getResultArray();
+            $headers = ['Nama Lengkap', 'Sekolah', 'ID Modul', 'Status', 'Skor Kuis', 'Tanggal Selesai'];
+            $data = $db->query("SELECT p.nama_lengkap, p.nama_sekolah, ps.id_modul, ps.status_modul, ps.skor_kuis, ps.tanggal_selesai FROM progres_siswa ps JOIN pengguna p ON ps.id_pengguna = p.id_pengguna WHERE p.peran = 'siswa'")->getResultArray();
         } elseif ($kategori === 'simulasi') {
-            $headers = ['ID Pengguna', 'Nama Lengkap', 'Sekolah', 'ID Skenario', 'Skor Kontrol Diri', 'Tanggal Percobaan'];
-            $data = $db->query("SELECT p.id_pengguna, p.nama_lengkap, p.nama_sekolah, rs.id_skenario, rs.skor_kontrol_diri, rs.tanggal_percobaan FROM riwayat_simulasi rs JOIN pengguna p ON rs.id_pengguna = p.id_pengguna WHERE p.peran = 'siswa'")->getResultArray();
+            $headers = ['Nama Lengkap', 'Sekolah', 'ID Skenario', 'Skor Kontrol Diri', 'Tanggal Percobaan'];
+            $data = $db->query("SELECT p.nama_lengkap, p.nama_sekolah, rs.id_skenario, rs.skor_kontrol_diri, rs.tanggal_percobaan FROM riwayat_simulasi rs JOIN pengguna p ON rs.id_pengguna = p.id_pengguna WHERE p.peran = 'siswa'")->getResultArray();
         } else {
-            $headers = ['ID Pengguna', 'Nama Lengkap', 'Sekolah', 'ID Kuesioner', 'ID Soal', 'Jawaban', 'Tanggal Isi'];
+            $headers = ['Nama Lengkap', 'Sekolah', 'ID Kuesioner', 'ID Soal', 'Jawaban', 'Tanggal Isi'];
             $data = $db->query("SELECT p.id_pengguna, p.nama_lengkap, p.nama_sekolah, pk.id_kuesioner, jk.id_soal, jk.jawaban_teks, pk.tanggal_isi FROM jawaban_kuesioner jk JOIN partisipasi_kuesioner pk ON jk.id_partisipasi = pk.id_partisipasi JOIN pengguna p ON pk.id_pengguna = p.id_pengguna WHERE p.peran = 'siswa'")->getResultArray();
         }
 
