@@ -74,10 +74,31 @@
                 <?php elseif ($modul['tipe_media'] === 'dokumen' && !empty($modul['file_media'])): ?>
                     <!-- Penampil PDF Disesuaikan (Tidak Over-Size di Laptop) -->
                     <div class="w-full h-[60vh] min-h-[400px] max-h-[600px] rounded-2xl overflow-hidden relative bg-gray-200 shadow-inner">
-                        <iframe src="<?= base_url('uploads/modul/' . esc($modul['file_media'])) ?>" class="absolute top-0 left-0 w-full h-full border-0"></iframe>
+                        <iframe
+                            src="https://docs.google.com/gview?url=<?= urlencode(base_url('uploads/modul/' . $modul['file_media'])) ?>&embedded=true"
+                            class="w-full h-[60vh] md:h-[80vh] rounded-xl border border-gray-300"
+                            frameborder="0">
+                        </iframe>
                     </div>
-                    <div class="text-center mt-4">
-                        <a href="<?= base_url('uploads/modul/' . esc($modul['file_media'])) ?>" download class="neu-flat px-6 py-2 rounded-full text-blue-600 font-bold text-xs inline-block active:neu-pressed">⬇️ Unduh PDF ke Perangkat</a>
+                    <div class="mt-4 flex justify-center gap-3">
+
+                        <!-- Tombol Buka PDF -->
+                        <a href="<?= base_url('uploads/modul/' . $modul['file_media']) ?>"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-blue-200 transition">
+                            <i data-lucide="external-link" class="w-4 h-4"></i>
+                            Buka PDF
+                        </a>
+
+                        <!-- Tombol Unduh PDF -->
+                        <a href="<?= base_url('uploads/modul/' . $modul['file_media']) ?>"
+                            download="<?= esc($modul['judul_modul']) ?>.pdf"
+                            class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-green-200 transition">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            Unduh PDF
+                        </a>
+
                     </div>
                 <?php endif; ?>
 
@@ -120,6 +141,7 @@
     </nav>
 
 </body>
+
 </html>
 
 <script src="https://unpkg.com/lucide@latest"></script>

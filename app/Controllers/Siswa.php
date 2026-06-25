@@ -494,6 +494,10 @@ class Siswa extends BaseController
                 session()->setFlashdata('pesan_gagal', "Respons kurang tepat. Silakan coba lagi strategi lain.");
             }
         }
-        return redirect()->to('/siswa/simulasi');
+
+        // PERUBAHAN DISINI: 
+        // Menggunakan redirect()->back() agar siswa dikembalikan ke halaman main_simulasi
+        // Flashdata (Pop Up Notifikasi) akan otomatis muncul di halaman tersebut.
+        return redirect()->back();
     }
 }

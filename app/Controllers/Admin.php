@@ -695,10 +695,7 @@ class Admin extends BaseController
     }
 
     // ==========================================
-    // TAMPILAN LAPORAN KUESIONER (KOLOM DINAMIS)
-    // ==========================================
-    // ==========================================
-    // TAMPILAN LAPORAN KUESIONER (KOLOM DINAMIS)
+    // TAMPILAN LAPORAN KUESIONER (HANYA TOTAL SKOR)
     // ==========================================
     public function laporan_kuesioner($id_kuesioner)
     {
@@ -711,10 +708,9 @@ class Admin extends BaseController
 
         $partisipasi = $db->query("SELECT pk.*, p.nama_lengkap, p.nama_sekolah FROM partisipasi_kuesioner pk JOIN pengguna p ON pk.id_pengguna = p.id_pengguna WHERE pk.id_kuesioner = ? ORDER BY pk.tanggal_isi DESC", [$id_kuesioner])->getResultArray();
 
-$laporan = [];
+        $laporan = [];
         foreach ($partisipasi as $part) {
-            $data_jawaban = [];
-            $total_skor = 0; // Tambahan kalkulasi skor
+            $total_skor = 0; // Hanya hitung total skor untuk ditampilkan di view tabel
 
             foreach ($daftar_soal as $soal) {
                 $jawab = $db->table('jawaban_kuesioner')->where(['id_partisipasi' => $part['id_partisipasi'], 'id_soal' => $soal['id_soal']])->get()->getRowArray();
@@ -738,8 +734,7 @@ $laporan = [];
                         }
                     }
                 }
-                $data_jawaban[] = $bobot;
-                $total_skor += $bobot; // Jumlahkan bobot ke total
+                $total_skor += $bobot; // Jumlahkan akumulasi total skor
             }
 
             $laporan[] = [
@@ -747,24 +742,19 @@ $laporan = [];
                 'nama'           => $part['nama_lengkap'],
                 'asal_sekolah'   => $part['nama_sekolah'] ?? 'Tidak Diketahui',
                 'tanggal_isi'    => date('d M Y H:i', strtotime($part['tanggal_isi'])),
-                'jawaban_bobot'  => $data_jawaban,
                 'total_skor'     => $total_skor // Masukkan ke data laporan
             ];
         }
 
         return view('admin/laporan_kuesioner', [
             'kuesioner'   => $kuesioner,
-            'daftar_soal' => $daftar_soal,
             'laporan'     => $laporan,
             'judul_halaman' => 'Laporan Kuesioner: ' . $kuesioner['judul_kuesioner']
         ]);
     }
 
     // ==========================================
-    // FITUR UNDUH DATA KUESIONER
-    // ==========================================
-    // ==========================================
-    // FITUR UNDUH DATA KUESIONER
+    // FITUR UNDUH DATA KUESIONER (FULL SOAL + TOTAL SKOR)
     // ==========================================
     public function ekspor_kuesioner($id_kuesioner, $format)
     {
@@ -772,7 +762,6 @@ $laporan = [];
 
         $kuesioner = $db->table('kuesioner')->where('id_kuesioner', $id_kuesioner)->get()->getRowArray();
 
-        // TAMBAHAN VALIDASI: Cegah error jika kuesioner tidak valid/terhapus
         if (!$kuesioner) {
             return redirect()->back()->with('error', 'Kuesioner tidak ditemukan.');
         }
@@ -780,11 +769,12 @@ $laporan = [];
         $daftar_soal = $db->table('soal_kuesioner')->where('id_kuesioner', $id_kuesioner)->orderBy('urutan', 'ASC')->get()->getResultArray();
         $partisipasi = $db->query("SELECT pk.*, p.nama_lengkap, p.nama_sekolah FROM partisipasi_kuesioner pk JOIN pengguna p ON pk.id_pengguna = p.id_pengguna WHERE pk.id_kuesioner = ? ORDER BY pk.tanggal_isi DESC", [$id_kuesioner])->getResultArray();
 
+        // Menyusun Header
         $headers = ['No', 'Nama Siswa', 'Asal Sekolah', 'Tanggal Pengisian'];
         foreach ($daftar_soal as $index => $soal) {
-            $headers[] = 'Soal ' . ($index + 1);
+            $headers[] = 'Soal ' . ($index + 1); // Tambah tiap detail soal di header
         }
-        $headers[] = 'Total Skor'; // Tambah header kolom untuk Excel/CSV
+        $headers[] = 'Total Skor'; // Tambah header kolom khusus Total Skor di ujung Excel/CSV
 
         $data_export = [];
         $no = 1;
@@ -796,7 +786,7 @@ $laporan = [];
                 $part['tanggal_isi']
             ];
 
-            $total_skor = 0; // Setel ulang skor untuk baris CSV
+            $total_skor = 0; // Setel ulang total skor per siswa
 
             foreach ($daftar_soal as $soal) {
                 $jawab = $db->table('jawaban_kuesioner')->where(['id_partisipasi' => $part['id_partisipasi'], 'id_soal' => $soal['id_soal']])->get()->getRowArray();
@@ -818,14 +808,14 @@ $laporan = [];
                         }
                     }
                 }
-                $row[] = $bobot;
-                $total_skor += $bobot; // Jumlahkan total skor
+                $row[] = $bobot; // Catat detail per soal ke dalam array baris Excel
+                $total_skor += $bobot; // Akumulasi total
             }
-            $row[] = $total_skor; // Masukkan kolom skor di ujung kanan
+            $row[] = $total_skor; // Letakkan Total Skor di urutan paling akhir
             $data_export[] = $row;
         }
 
-        // Generate nama file yang aman dari karakter ilegal
+        // Generate nama file 
         $filename = "Data_Kuesioner_" . preg_replace('/[^A-Za-z0-9]/', '_', $kuesioner['judul_kuesioner']) . "_" . date('Y-m-d');
 
         if ($format === 'csv') {

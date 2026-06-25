@@ -71,14 +71,32 @@
                     Browser Anda tidak mendukung elemen audio.
                 </audio>
             </div>
-
-        <?php elseif ($panduan['tipe_media'] === 'dokumen' && !empty($panduan['file_media'])): ?>
+<?php elseif ($panduan['tipe_media'] === 'dokumen' && !empty($panduan['file_media'])): ?>
             <div class="mb-3 flex items-center gap-2 text-red-500 font-black text-xs uppercase tracking-wider">
                 <i data-lucide="play-circle" class="w-4 h-4"></i>
                 Pembelajaran
             </div>
-            <div class="w-full rounded-2xl overflow-hidden shadow-inner bg-gray-100">
-                <iframe src="/uploads/panduan/<?= esc($panduan['file_media']) ?>" class="w-full h-96 md:h-[600px]" frameborder="0"></iframe>
+            
+            <div class="w-full rounded-2xl overflow-hidden shadow-inner bg-gray-100 mb-4">
+                <iframe src="https://docs.google.com/gview?url=<?= urlencode(base_url('uploads/panduan/' . $panduan['file_media'])) ?>&embedded=true" class="w-full h-96 md:h-[600px]" frameborder="0"></iframe>
+                
+                </div>
+
+            <div class="flex justify-center gap-3">
+                <a href="<?= base_url('uploads/panduan/' . $panduan['file_media']) ?>"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-blue-200 transition">
+                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                    Buka PDF
+                </a>
+
+                <a href="<?= base_url('uploads/panduan/' . $panduan['file_media']) ?>"
+                    download="<?= esc($panduan['judul_panduan']) ?>.pdf"
+                    class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-green-200 transition">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    Unduh PDF
+                </a>
             </div>
         <?php endif; ?>
 

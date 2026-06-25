@@ -23,75 +23,6 @@
     </style>
 </head>
 
-<!-- ============================================================== -->
-<!-- DYNAMIC BOTTOM NAVIGATION BAR UNTUK HALAMAN ADMIN              -->
-<!-- ============================================================== -->
-<nav class="fixed bottom-0 left-0 w-full bg-[#E0E5EC] rounded-t-3xl border-t border-white/50 z-50" style="box-shadow: 0 -10px 25px rgba(163,177,198,0.4);">
-    <div class="max-w-5xl mx-auto px-2 md:px-6 py-3 flex justify-between items-center text-center">
-
-        <a href="/admin/beranda" class="flex-1 flex flex-col items-center text-gray-400 hover:text-blue-500 transition transform hover:-translate-y-1"> <i data-lucide="house" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-extrabold truncate w-full">Beranda</span> </a>
-
-        <a href="/admin/kelola_modul" class="flex-1 flex flex-col items-center text-gray-400 hover:text-teal-500 transition transform hover:-translate-y-1"> <i data-lucide="book-open" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Modul</span> </a>
-
-        <a href="/admin/kelola_simulasi" class="flex-1 flex flex-col items-center text-gray-400 hover:text-teal-500 transition transform hover:-translate-y-1"> <i data-lucide="gamepad-2" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Simulasi</span> </a>
-
-        <a href="/admin/kelola_kuesioner" class="flex-1 flex flex-col items-center transition transform hover:-translate-y-1 text-green-600"> <i data-lucide="clipboard-list" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Kuesioner</span> </a>
-
-        <!-- ================== MENU AKSES (DROPUP) ================== -->
-        <div class="flex-1 relative flex flex-col items-center cursor-pointer group" onclick="document.getElementById('menuAkses').classList.toggle('hidden'); event.stopPropagation();">
-            <i data-lucide="shield-check"
-                class="w-5 h-5 md:w-6 md:h-6 mb-1 text-gray-400 group-hover:text-indigo-500"></i>
-
-            <!-- Teks "Akses" dengan Ikon Panah Ke Atas -->
-            <span class="text-[9px] md:text-[10px] font-bold truncate w-full text-gray-400 group-hover:text-indigo-500 flex items-center justify-center gap-0.5">
-                Akses
-                <svg class="w-2.5 h-2.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path>
-                </svg>
-            </span>
-
-            <!-- Popup Melayang -->
-            <div id="menuAkses" class="hidden absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 bg-white rounded-2xl shadow-xl border border-gray-200 w-36 py-2 flex flex-col z-50 transition-all">
-                <!-- Segitiga penunjuk ke bawah -->
-                <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-b border-r border-gray-200"></div>
-
-                <a href="/admin/kelola_sekolah" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-green-600 hover:bg-green-50 transition border-b border-gray-100">
-                    <i data-lucide="school" class="w-4 h-4 mr-3"></i> Sekolah
-                </a>
-                <a href="/admin/manajemen_pengguna" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
-                    <i data-lucide="users" class="w-4 h-4 mr-3"></i> Pengguna
-                </a>
-                <a href="/admin/kelola_tips" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
-                    <i data-lucide="lightbulb" class="w-4 h-4 mr-3"></i> Afirmasi
-                </a>
-                <a href="/admin/kelola_panduan" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
-                    <i data-lucide="book" class="w-4 h-4 mr-3"></i> Panduan
-                </a>
-            </div>
-        </div>
-        <!-- ========================================================= -->
-
-        <a href="/admin/ekspor_riset" class="flex-1 flex flex-col items-center text-gray-400 hover:text-purple-600 transition transform hover:-translate-y-1"> <i data-lucide="download" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Ekspor</span> </a>
-
-        <a href="/profil" class="flex-1 flex flex-col items-center text-gray-400 hover:text-blue-600 transition transform hover:-translate-y-1"> <i data-lucide="user" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Profil</span> </a>
-
-        <a href="/auth/logout" class="flex-1 flex flex-col items-center text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1">
-            <i data-lucide="log-out" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
-            <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Keluar</span>
-        </a>
-    </div>
-</nav>
-
-<!-- Script agar menu dropup tertutup otomatis jika area lain di layar diklik -->
-<script>
-    document.addEventListener('click', function(event) {
-        const menuAkses = document.getElementById('menuAkses');
-        if (menuAkses && !menuAkses.classList.contains('hidden')) {
-            menuAkses.classList.add('hidden');
-        }
-    });
-</script>
-
 <body class="pb-32 font-sans text-gray-700 container mx-auto px-4 lg:max-w-6xl min-h-screen pt-8">
 
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -125,9 +56,14 @@
         </div>
     </div>
 
+    <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 rounded mb-6 text-sm flex gap-2 shadow-sm">
+        <i data-lucide="info" class="w-5 h-5 flex-shrink-0"></i>
+        <p>Tabel di bawah ini telah disederhanakan dengan hanya menampilkan nilai akhir <strong>Total Skor</strong> per siswa untuk memudahkan pemantauan. Rekap detail skor dari <strong>setiap butir soal</strong> tetap dapat Anda akses secara lengkap melalui tombol <strong>Unduh CSV/Excel</strong> di atas.</p>
+    </div>
+
     <div class="neu-flat p-6 rounded-3xl mb-8">
         <h2 class="font-extrabold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
-            Rekapitulasi Data (<?= count($laporan ?? []) ?> Partisipan)
+            Rekapitulasi Data Skor (<?= count($laporan ?? []) ?> Partisipan)
         </h2>
 
         <div class="overflow-x-auto pb-4">
@@ -138,15 +74,6 @@
                         <th class="py-3 px-4 font-extrabold">Nama Siswa <span class="text-[9px] text-red-400 lowercase block">(Inisial Privasi)</span></th>
                         <th class="py-3 px-4 font-extrabold">Asal Sekolah</th>
                         <th class="py-3 px-4 font-extrabold">Tanggal Isi</th>
-
-                        <?php if (isset($daftar_soal)): ?>
-                            <?php foreach ($daftar_soal as $index => $soal): ?>
-                                <th class="py-3 px-4 font-extrabold text-center bg-gray-50/50 cursor-help" title="<?= esc($soal['teks_soal'] ?? $soal['pertanyaan'] ?? 'Detail Soal ' . ($index + 1)) ?>">
-                                    Soal <?= $index + 1 ?>
-                                </th>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-
                         <th class="py-3 px-4 font-extrabold text-center bg-purple-100 text-purple-700">Total Skor</th>
                         <th class="py-3 px-4 font-extrabold text-center sticky right-0 bg-[#E0E5EC] shadow-[-5px_0_10px_-5px_rgba(0,0,0,0.1)]">Aksi</th>
                     </tr>
@@ -154,7 +81,7 @@
                 <tbody>
                     <?php if (empty($laporan)): ?>
                         <tr>
-                            <td colspan="<?= (isset($daftar_soal) ? count($daftar_soal) : 0) + 5 ?>" class="py-12 text-center font-bold text-gray-400">
+                            <td colspan="6" class="py-12 text-center font-bold text-gray-400">
                                 Belum ada siswa yang mengisi kuesioner ini.
                             </td>
                         </tr>
@@ -178,19 +105,15 @@
                                 <td class="py-3 px-4 text-xs font-bold text-gray-600"><?= esc($row['asal_sekolah']) ?></td>
                                 <td class="py-3 px-4 text-xs text-gray-500"><?= esc($row['tanggal_isi']) ?></td>
 
-                                <?php if (isset($row['jawaban_bobot'])): ?>
-                                    <?php foreach ($row['jawaban_bobot'] as $bobot): ?>
-                                        <td class="py-3 px-4 text-center font-black <?= $bobot > 0 ? 'text-gray-800' : 'text-gray-300' ?> bg-white/20">
-                                            <?= $bobot ?>
-                                        </td>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
+                                <td class="py-3 px-4 text-center font-black text-purple-700 bg-purple-50/50 text-lg">
+                                    <?= esc($row['total_skor'] ?? 0) ?>
+                                </td>
 
                                 <td class="py-3 px-4 text-center sticky right-0 bg-[#E0E5EC] shadow-[-5px_0_10px_-5px_rgba(0,0,0,0.1)]">
                                     <a href="/admin/detail_jawaban_kuesioner/<?= $row['id_partisipasi'] ?>"
                                         class="inline-flex items-center gap-1.5 bg-purple-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-purple-600 shadow-sm transition active:scale-95">
                                         <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                                        Lihat
+                                        Detail
                                     </a>
                                 </td>
                             </tr>
@@ -201,10 +124,68 @@
         </div>
     </div>
 
+    <nav class="fixed bottom-0 left-0 w-full bg-[#E0E5EC] rounded-t-3xl border-t border-white/50 z-50" style="box-shadow: 0 -10px 25px rgba(163,177,198,0.4);">
+        <div class="max-w-5xl mx-auto px-2 md:px-6 py-3 flex justify-between items-center text-center">
+
+            <a href="/admin/beranda" class="flex-1 flex flex-col items-center text-gray-400 hover:text-blue-500 transition transform hover:-translate-y-1"> <i data-lucide="house" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-extrabold truncate w-full">Beranda</span> </a>
+
+            <a href="/admin/kelola_modul" class="flex-1 flex flex-col items-center text-gray-400 hover:text-teal-500 transition transform hover:-translate-y-1"> <i data-lucide="book-open" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Modul</span> </a>
+
+            <a href="/admin/kelola_simulasi" class="flex-1 flex flex-col items-center text-gray-400 hover:text-teal-500 transition transform hover:-translate-y-1"> <i data-lucide="gamepad-2" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Simulasi</span> </a>
+
+            <a href="/admin/kelola_kuesioner" class="flex-1 flex flex-col items-center transition transform hover:-translate-y-1 text-green-600"> <i data-lucide="clipboard-list" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Kuesioner</span> </a>
+
+            <div class="flex-1 relative flex flex-col items-center cursor-pointer group" onclick="document.getElementById('menuAkses').classList.toggle('hidden'); event.stopPropagation();">
+                <i data-lucide="shield-check"
+                    class="w-5 h-5 md:w-6 md:h-6 mb-1 text-gray-400 group-hover:text-indigo-500"></i>
+
+                <span class="text-[9px] md:text-[10px] font-bold truncate w-full text-gray-400 group-hover:text-indigo-500 flex items-center justify-center gap-0.5">
+                    Akses
+                    <svg class="w-2.5 h-2.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path>
+                    </svg>
+                </span>
+
+                <div id="menuAkses" class="hidden absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 bg-white rounded-2xl shadow-xl border border-gray-200 w-36 py-2 flex flex-col z-50 transition-all">
+                    <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-b border-r border-gray-200"></div>
+
+                    <a href="/admin/kelola_sekolah" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-green-600 hover:bg-green-50 transition border-b border-gray-100">
+                        <i data-lucide="school" class="w-4 h-4 mr-3"></i> Sekolah
+                    </a>
+                    <a href="/admin/manajemen_pengguna" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
+                        <i data-lucide="users" class="w-4 h-4 mr-3"></i> Pengguna
+                    </a>
+                    <a href="/admin/kelola_tips" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
+                        <i data-lucide="lightbulb" class="w-4 h-4 mr-3"></i> Afirmasi
+                    </a>
+                    <a href="/admin/kelola_panduan" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
+                        <i data-lucide="book" class="w-4 h-4 mr-3"></i> Panduan
+                    </a>
+                </div>
+            </div>
+            <a href="/admin/ekspor_riset" class="flex-1 flex flex-col items-center text-gray-400 hover:text-purple-600 transition transform hover:-translate-y-1"> <i data-lucide="download" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Ekspor</span> </a>
+
+            <a href="/profil" class="flex-1 flex flex-col items-center text-gray-400 hover:text-blue-600 transition transform hover:-translate-y-1"> <i data-lucide="user" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Profil</span> </a>
+
+            <a href="/auth/logout" class="flex-1 flex flex-col items-center text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1">
+                <i data-lucide="log-out" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+                <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Keluar</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        document.addEventListener('click', function(event) {
+            const menuAkses = document.getElementById('menuAkses');
+            if (menuAkses && !menuAkses.classList.contains('hidden')) {
+                menuAkses.classList.add('hidden');
+            }
+        });
+    </script>
+
     <script>
         lucide.createIcons();
     </script>
 
 </body>
-
 </html>
