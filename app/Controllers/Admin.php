@@ -711,29 +711,27 @@ class Admin extends BaseController
 
         $partisipasi = $db->query("SELECT pk.*, p.nama_lengkap, p.nama_sekolah FROM partisipasi_kuesioner pk JOIN pengguna p ON pk.id_pengguna = p.id_pengguna WHERE pk.id_kuesioner = ? ORDER BY pk.tanggal_isi DESC", [$id_kuesioner])->getResultArray();
 
-        $laporan = [];
+$laporan = [];
         foreach ($partisipasi as $part) {
             $data_jawaban = [];
+            $total_skor = 0; // Tambahan kalkulasi skor
 
             foreach ($daftar_soal as $soal) {
                 $jawab = $db->table('jawaban_kuesioner')->where(['id_partisipasi' => $part['id_partisipasi'], 'id_soal' => $soal['id_soal']])->get()->getRowArray();
-
-                $bobot = 0; // Default
+                $bobot = 0; 
+                
                 if ($jawab) {
                     $opsi_array = json_decode($soal['opsi_jawaban'], true);
                     if (is_array($opsi_array)) {
                         foreach ($opsi_array as $opsi) {
-                            // Validasi: Jika format baru (JSON Berbobot)
                             if (is_array($opsi) && isset($opsi['teks'])) {
                                 if ($opsi['teks'] === $jawab['jawaban_teks']) {
                                     $bobot = $opsi['nilai'];
                                     break;
                                 }
-                            }
-                            // Fallback: Jika masih menggunakan format array lama ["Setuju", "Tidak"]
-                            elseif (is_string($opsi)) {
+                            } elseif (is_string($opsi)) {
                                 if ($opsi === $jawab['jawaban_teks']) {
-                                    $bobot = 0; // Format lama tidak memiliki bobot angka
+                                    $bobot = 0; 
                                     break;
                                 }
                             }
@@ -741,6 +739,7 @@ class Admin extends BaseController
                     }
                 }
                 $data_jawaban[] = $bobot;
+                $total_skor += $bobot; // Jumlahkan bobot ke total
             }
 
             $laporan[] = [
@@ -748,7 +747,8 @@ class Admin extends BaseController
                 'nama'           => $part['nama_lengkap'],
                 'asal_sekolah'   => $part['nama_sekolah'] ?? 'Tidak Diketahui',
                 'tanggal_isi'    => date('d M Y H:i', strtotime($part['tanggal_isi'])),
-                'jawaban_bobot'  => $data_jawaban
+                'jawaban_bobot'  => $data_jawaban,
+                'total_skor'     => $total_skor // Masukkan ke data laporan
             ];
         }
 
@@ -784,6 +784,7 @@ class Admin extends BaseController
         foreach ($daftar_soal as $index => $soal) {
             $headers[] = 'Soal ' . ($index + 1);
         }
+        $headers[] = 'Total Skor'; // Tambah header kolom untuk Excel/CSV
 
         $data_export = [];
         $no = 1;
@@ -794,6 +795,8 @@ class Admin extends BaseController
                 $part['nama_sekolah'] ?? '-',
                 $part['tanggal_isi']
             ];
+
+            $total_skor = 0; // Setel ulang skor untuk baris CSV
 
             foreach ($daftar_soal as $soal) {
                 $jawab = $db->table('jawaban_kuesioner')->where(['id_partisipasi' => $part['id_partisipasi'], 'id_soal' => $soal['id_soal']])->get()->getRowArray();
@@ -816,7 +819,9 @@ class Admin extends BaseController
                     }
                 }
                 $row[] = $bobot;
+                $total_skor += $bobot; // Jumlahkan total skor
             }
+            $row[] = $total_skor; // Masukkan kolom skor di ujung kanan
             $data_export[] = $row;
         }
 
@@ -861,14 +866,38 @@ class Admin extends BaseController
             WHERE pk.id_partisipasi = ?
         ", [$id_partisipasi])->getRowArray();
 
-        // Ambil soal dan jawaban yang dipilih siswa
-        $data['jawaban'] = $db->query("
-            SELECT sk.teks_soal, jk.jawaban_teks
+        // Ambil soal, opsi, dan jawaban yang dipilih siswa
+        $jawaban_mentah = $db->query("
+            SELECT sk.teks_soal, jk.jawaban_teks, sk.opsi_jawaban
             FROM jawaban_kuesioner jk
             JOIN soal_kuesioner sk ON jk.id_soal = sk.id_soal
             WHERE jk.id_partisipasi = ?
             ORDER BY sk.urutan ASC
         ", [$id_partisipasi])->getResultArray();
+
+        $total_skor = 0;
+        $jawaban_bersih = [];
+
+        foreach ($jawaban_mentah as $j) {
+            $bobot = 0;
+            $opsi_array = json_decode($j['opsi_jawaban'], true);
+            if (is_array($opsi_array)) {
+                foreach ($opsi_array as $opsi) {
+                    if (is_array($opsi) && isset($opsi['teks'])) {
+                        if ($opsi['teks'] === $j['jawaban_teks']) {
+                            $bobot = $opsi['nilai'];
+                            break;
+                        }
+                    }
+                }
+            }
+            $j['bobot'] = $bobot;
+            $total_skor += $bobot;
+            $jawaban_bersih[] = $j;
+        }
+
+        $data['jawaban'] = $jawaban_bersih;
+        $data['total_skor'] = $total_skor;
 
         return view('admin/detail_jawaban_kuesioner', $data);
     }

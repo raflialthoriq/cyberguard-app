@@ -138,43 +138,47 @@
             elemenSoal.className = 'neu-pressed p-5 rounded-2xl border-l-4 border-purple-500 relative';
             elemenSoal.id = `soal-${hitungSoal}`;
 
-            // Struktur HTML untuk 1 Soal
+            // Struktur HTML untuk 1 Soal dengan Skala Otomatis 1-5
             elemenSoal.innerHTML = `
                 <button type="button" onclick="hapusElemen('soal-${hitungSoal}')" class="absolute top-4 right-4 text-red-400 hover:text-red-600"> <i data-lucide="x-circle" class="w-5 h-5"></i></button>
                 <label class="block text-xs font-extrabold text-gray-600 mb-2">Pertanyaan Soal #${hitungSoal + 1}</label>
                 <input type="text" name="soal[${hitungSoal}][teks]" placeholder="Ketik pertanyaan / pernyataan di sini..." class="w-full bg-transparent border-b-2 border-gray-400 py-2 focus:outline-none text-sm font-bold text-gray-800 mb-4" required>
                 
                 <div class="pl-4 border-l-2 border-gray-300">
-                    <label class="block text-[10px] uppercase font-bold text-gray-500 mb-2">Opsi Skala Radiobox:</label>
-                    <div id="wadah-opsi-${hitungSoal}" class="space-y-2 mb-3">
-                        <!-- Input Opsi default (Minimal 2 opsi) -->
+                    <label class="block text-[10px] uppercase font-bold text-gray-500 mb-2">Opsi Skala Likert (Otomatis):</label>
+                    <div class="space-y-2 mb-3">
                         <div class="flex gap-2">
-                            <input type="text" name="soal[${hitungSoal}][opsi][]" placeholder="Misal: Sangat Setuju" class="w-full text-xs font-bold bg-white px-3 py-2 rounded-lg border border-gray-200 focus:outline-none" required>
+                            <input type="hidden" name="soal[${hitungSoal}][opsi][0][teks]" value="Sangat Tidak Setuju">
+                            <input type="hidden" name="soal[${hitungSoal}][opsi][0][nilai]" value="1">
+                            <span class="w-full text-xs font-bold bg-white px-3 py-2 rounded-lg border border-gray-200 text-gray-500 cursor-not-allowed">1 - Sangat Tidak Setuju</span>
                         </div>
                         <div class="flex gap-2">
-                            <input type="text" name="soal[${hitungSoal}][opsi][]" placeholder="Misal: Setuju" class="w-full text-xs font-bold bg-white px-3 py-2 rounded-lg border border-gray-200 focus:outline-none" required>
+                            <input type="hidden" name="soal[${hitungSoal}][opsi][1][teks]" value="Tidak Setuju">
+                            <input type="hidden" name="soal[${hitungSoal}][opsi][1][nilai]" value="2">
+                            <span class="w-full text-xs font-bold bg-white px-3 py-2 rounded-lg border border-gray-200 text-gray-500 cursor-not-allowed">2 - Tidak Setuju</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="hidden" name="soal[${hitungSoal}][opsi][2][teks]" value="Netral">
+                            <input type="hidden" name="soal[${hitungSoal}][opsi][2][nilai]" value="3">
+                            <span class="w-full text-xs font-bold bg-white px-3 py-2 rounded-lg border border-gray-200 text-gray-500 cursor-not-allowed">3 - Netral</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="hidden" name="soal[${hitungSoal}][opsi][3][teks]" value="Setuju">
+                            <input type="hidden" name="soal[${hitungSoal}][opsi][3][nilai]" value="4">
+                            <span class="w-full text-xs font-bold bg-white px-3 py-2 rounded-lg border border-gray-200 text-gray-500 cursor-not-allowed">4 - Setuju</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="hidden" name="soal[${hitungSoal}][opsi][4][teks]" value="Sangat Setuju">
+                            <input type="hidden" name="soal[${hitungSoal}][opsi][4][nilai]" value="5">
+                            <span class="w-full text-xs font-bold bg-white px-3 py-2 rounded-lg border border-gray-200 text-gray-500 cursor-not-allowed">5 - Sangat Setuju</span>
                         </div>
                     </div>
-                    <button type="button" onclick="tambahOpsi(${hitungSoal})" class="text-[10px] bg-purple-100 text-purple-600 px-3 py-1 rounded-lg font-bold hover:bg-purple-200 transition flex items-center gap-1"> <i data-lucide="plus" class="w-3 h-3"></i> Tambah Opsi Pilihan </button>
-                    </div>
+                </div>
             `;
 
             wadah.appendChild(elemenSoal);
             lucide.createIcons();
             hitungSoal++;
-        }
-
-        function tambahOpsi(indexSoal) {
-            const wadahOpsi = document.getElementById(`wadah-opsi-${indexSoal}`);
-            const divOpsi = document.createElement('div');
-            divOpsi.className = 'flex gap-2 relative';
-            divOpsi.innerHTML = `
-                <input type="text" name="soal[${indexSoal}][opsi][]" placeholder="Opsi baru..." class="w-full text-xs font-bold bg-white px-3 py-2 rounded-lg border border-gray-200 focus:outline-none" required>
-                <button type="button" onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600 flex items-center"> <i data-lucide="trash-2" class="w-4 h-4"></i> </button>
-            `;
-            wadahOpsi.appendChild(divOpsi);
-            lucide.createIcons();
-
         }
 
         function hapusElemen(idElemen) {

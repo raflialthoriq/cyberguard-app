@@ -147,6 +147,7 @@
                             <?php endforeach; ?>
                         <?php endif; ?>
 
+                        <th class="py-3 px-4 font-extrabold text-center bg-purple-100 text-purple-700">Total Skor</th>
                         <th class="py-3 px-4 font-extrabold text-center sticky right-0 bg-[#E0E5EC] shadow-[-5px_0_10px_-5px_rgba(0,0,0,0.1)]">Aksi</th>
                     </tr>
                 </thead>
