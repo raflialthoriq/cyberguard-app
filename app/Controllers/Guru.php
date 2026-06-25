@@ -190,6 +190,26 @@ class Guru extends BaseController
         ]);
     }
 
+    public function keluarkan_siswa($id_siswa, $id_kelas)
+    {
+        $this->cekAkses();
+        $db = \Config\Database::connect();
+        $id_guru = session()->get('id_pengguna');
+        
+        // Validasi keamanan: Pastikan guru ini benar-benar pemilik kelas tersebut
+        $kelas = $db->table('kelas')->where(['id_kelas' => $id_kelas, 'id_guru' => $id_guru])->get()->getRowArray();
+        
+        if ($kelas) {
+            // Update id_kelas menjadi NULL
+            $db->table('pengguna')->where('id_pengguna', $id_siswa)->update(['id_kelas' => null]);
+            session()->setFlashdata('pesan', 'Siswa berhasil dikeluarkan dari kelas.');
+        } else {
+            session()->setFlashdata('pesan', 'Akses ditolak! Anda tidak memiliki wewenang untuk kelas ini.');
+        }
+        
+        return redirect()->to('/guru/detail_kelas/' . $id_kelas);
+    }
+
     public function detail_siswa($id_siswa)
     {
         $this->cekAkses();

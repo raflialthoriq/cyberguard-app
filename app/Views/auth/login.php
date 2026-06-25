@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - CyberGuard</title>
+    <title>Masuk - CyberGuard</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #E0E5EC; }
@@ -16,7 +17,7 @@
 
     <div class="neu-flat p-8 rounded-[40px] w-full max-w-sm">
         <div class="text-center mb-8">
-            <div class="w-20 h-20 neu-flat rounded-full mx-auto flex items-center justify-center text-4xl mb-4 text-blue-500">🛡️</div>
+            <div class="w-20 h-20 neu-flat rounded-full mx-auto flex items-center justify-center text-4xl mb-4 text-blue-500"><span class="text-3xl"> <img src="logo.png" alt="Logo CyberGuard" class="h-10 w-10"></span></div>
             <h1 class="text-2xl font-extrabold text-gray-800">CyberGuard</h1>
             <p class="text-xs text-gray-500 font-bold mt-1">Aplikasi Pelatihan CBT Anti-Cyberbullying</p>
         </div>

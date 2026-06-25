@@ -1,34 +1,48 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil - CyberGuard</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
     <style>
-        body { background-color: #E0E5EC; }
-        .neu-flat { box-shadow: 7px 7px 14px rgb(163,177,198,0.6), -7px -7px 14px rgba(255,255,255,0.7); background-color: #E0E5EC; }
-        .neu-pressed { box-shadow: inset 6px 6px 10px 0 rgba(163,177,198,0.7), inset -6px -6px 10px 0 rgba(255,255,255,1); background-color: #E0E5EC; }
+        body {
+            background-color: #E0E5EC;
+        }
+
+        .neu-flat {
+            box-shadow: 7px 7px 14px rgb(163, 177, 198, 0.6), -7px -7px 14px rgba(255, 255, 255, 0.7);
+            background-color: #E0E5EC;
+        }
+
+        .neu-pressed {
+            box-shadow: inset 6px 6px 10px 0 rgba(163, 177, 198, 0.7), inset -6px -6px 10px 0 rgba(255, 255, 255, 1);
+            background-color: #E0E5EC;
+        }
     </style>
 </head>
+
 <body class="pb-32 font-sans text-gray-700 container mx-auto px-4 lg:max-w-3xl relative min-h-screen">
-    
+
     <div class="mt-8 mb-6 text-center">
         <h1 class="text-2xl font-extrabold text-gray-800">Profil Saya</h1>
     </div>
 
-    <?php if(session()->getFlashdata('pesan')): ?>
-        <div class="bg-green-100 text-green-700 p-4 rounded-2xl mb-6 text-sm font-bold text-center neu-flat">
-            ✅ <?= session()->getFlashdata('pesan') ?>
+    <?php if (session()->getFlashdata('pesan')): ?>
+        <div class="neu-flat flex items-center gap-2 text-green-700 p-4 rounded-2xl">
+            <i data-lucide="circle-check-big" class="w-5 h-5"></i>
+            <span><?= session()->getFlashdata('pesan') ?></span>
         </div>
     <?php endif; ?>
-    <?php if(session()->getFlashdata('pesan_gagal')): ?>
-        <div class="bg-red-100 text-red-700 p-4 rounded-2xl mb-6 text-sm font-bold text-center neu-flat">
-            ❌ <?= session()->getFlashdata('pesan_gagal') ?>
+    <?php if (session()->getFlashdata('pesan_gagal')): ?>
+        <div class="neu-flat flex items-center gap-2 text-red-700 p-4 rounded-2xl">
+            <i data-lucide="circle-x" class="w-5 h-5"></i>
+            <span><?= session()->getFlashdata('pesan_gagal') ?></span>
         </div>
     <?php endif; ?>
 
@@ -36,58 +50,68 @@
         <!-- FOTO PROFIL -->
         <div class="flex flex-col items-center mb-8">
             <div class="w-32 h-32 rounded-full neu-pressed mb-3 overflow-hidden flex items-center justify-center border-4 border-[#E0E5EC]">
-                <?php if(!empty($user['url_avatar'])): ?>
+                <?php if (!empty($user['url_avatar'])): ?>
                     <img id="avatarPreview" src="/<?= $user['url_avatar'] ?>" alt="Avatar" class="w-full h-full object-cover">
                 <?php else: ?>
-                    <span class="text-4xl text-gray-400">👤</span>
+                    <div class="w-full h-full flex items-center justify-center">
+                        <i data-lucide="user-round" class="w-12 h-12 text-gray-400"></i>
+                    </div>
                 <?php endif; ?>
             </div>
-            
-            <label id="btnGantiFoto" class="hidden neu-flat px-4 py-2 rounded-full text-xs font-bold text-blue-600 cursor-pointer hover:text-blue-800 transition">
-                📷 Ubah Foto
+
+            <label id="btnGantiFoto"
+                class="hidden neu-flat px-5 py-3 rounded-2xl text-xs font-bold text-blue-600 cursor-pointer hover:text-blue-800 transition flex items-center gap-2">
+                <i data-lucide="camera" class="w-4 h-4"></i>
+                Ubah Foto
                 <input type="file" id="inputFoto" accept="image/*" class="hidden" onchange="bukaCropper(event)">
             </label>
         </div>
 
-        <?php if($user['peran'] === 'siswa'): ?>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-            
-            <div class="neu-flat p-5 rounded-3xl text-center flex flex-col justify-center items-center md:col-span-1">
-                <span class="text-3xl mb-1">✨</span>
-                <span class="text-2xl font-black text-indigo-600"><?= esc($user['total_poin'] ?? 0) ?></span>
-                <span class="text-[9px] font-extrabold text-gray-400 uppercase tracking-widest mt-1">Total Poin CBT</span>
-            </div>
+        <?php if ($user['peran'] === 'siswa'): ?>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
 
-            <div class="neu-flat p-5 rounded-3xl md:col-span-2">
-                <h3 class="text-[9px] uppercase tracking-widest font-extrabold text-gray-400 mb-3 text-center md:text-left">Lencana Tersedia</h3>
-                <div class="flex justify-around md:justify-start gap-4">
-                    
-                    <div class="flex flex-col items-center text-center <?= $lencana['perisai_pertama'] ? '' : 'opacity-30 grayscale' ?>">
-                        <div class="w-12 h-12 rounded-full <?= $lencana['perisai_pertama'] ? 'bg-blue-100 text-blue-600' : 'neu-pressed text-gray-400' ?> flex items-center justify-center text-xl shadow-inner font-bold" title="Lulus Modul 1">
-                            🛡️
-                        </div>
-                        <span class="text-[9px] font-bold mt-1 text-gray-600">Perisai Pertama</span>
+                <div class="neu-flat p-5 rounded-3xl text-center flex flex-col justify-center items-center md:col-span-1">
+                    <div class="mb-2">
+                        <i data-lucide="sparkles"
+                            class="w-8 h-8 text-indigo-500"></i>
                     </div>
+                    <span class="text-2xl font-black text-indigo-600"><?= esc($user['total_poin'] ?? 0) ?></span>
+                    <span class="text-[9px] font-extrabold text-gray-400 uppercase tracking-widest mt-1">Total Poin CBT</span>
+                </div>
 
-                    <div class="flex flex-col items-center text-center <?= $lencana['master_emosi'] ? '' : 'opacity-30 grayscale' ?>">
-                        <div class="w-12 h-12 rounded-full <?= $lencana['master_emosi'] ? 'bg-purple-100 text-purple-600' : 'neu-pressed text-gray-400' ?> flex items-center justify-center text-xl shadow-inner font-bold" title="Selesaikan 5 Simulasi Cerita">
-                            🔮
+                <div class="neu-flat p-5 rounded-3xl md:col-span-2">
+                    <h3 class="text-[9px] uppercase tracking-widest font-extrabold text-gray-400 mb-3 text-center md:text-left">Lencana Tersedia</h3>
+                    <div class="flex justify-around md:justify-start gap-4">
+
+                        <div class="flex flex-col items-center text-center <?= $lencana['perisai_pertama'] ? '' : 'opacity-30 grayscale' ?>">
+                            <div class="w-12 h-12 rounded-full <?= $lencana['perisai_pertama'] ? 'bg-blue-100 text-blue-600' : 'neu-pressed text-gray-400' ?> flex items-center justify-center text-xl shadow-inner font-bold" title="Lulus Modul 1">
+                                <i data-lucide="shield-check"
+                                    class="w-6 h-6"></i>
+                            </div>
+                            <span class="text-[9px] font-bold mt-1 text-gray-600">Perisai Pertama</span>
                         </div>
-                        <span class="text-[9px] font-bold mt-1 text-gray-600">Master Emosi</span>
-                    </div>
 
-                    <div class="flex flex-col items-center text-center <?= $lencana['penulis_harian'] ? '' : 'opacity-30 grayscale' ?>">
-                        <div class="w-12 h-12 rounded-full <?= $lencana['penulis_harian'] ? 'bg-teal-100 text-teal-600' : 'neu-pressed text-gray-400' ?> flex items-center justify-center text-xl shadow-inner font-bold" title="Mengisi Lebih dari 7 Jurnal">
-                            ✍️
+                        <div class="flex flex-col items-center text-center <?= $lencana['master_emosi'] ? '' : 'opacity-30 grayscale' ?>">
+                            <div class="w-12 h-12 rounded-full <?= $lencana['master_emosi'] ? 'bg-purple-100 text-purple-600' : 'neu-pressed text-gray-400' ?> flex items-center justify-center text-xl shadow-inner font-bold" title="Selesaikan 5 Simulasi Cerita">
+                                <i data-lucide="brain"
+                                    class="w-6 h-6"></i>
+                            </div>
+                            <span class="text-[9px] font-bold mt-1 text-gray-600">Master Emosi</span>
                         </div>
-                        <span class="text-[9px] font-bold mt-1 text-gray-600">Penulis Harian</span>
-                    </div>
 
+                        <div class="flex flex-col items-center text-center <?= $lencana['penulis_harian'] ? '' : 'opacity-30 grayscale' ?>">
+                            <div class="w-12 h-12 rounded-full <?= $lencana['penulis_harian'] ? 'bg-teal-100 text-teal-600' : 'neu-pressed text-gray-400' ?> flex items-center justify-center text-xl shadow-inner font-bold" title="Mengisi Lebih dari 7 Jurnal">
+                                <i data-lucide="pen-tool"
+                                    class="w-6 h-6"></i>
+                            </div>
+                            <span class="text-[9px] font-bold mt-1 text-gray-600">Penulis Harian</span>
+                        </div>
+
+                    </div>
                 </div>
             </div>
-        </div>
         <?php endif; ?>
-    
+
         <form id="formProfil" action="/profil/update" method="POST">
             <input type="hidden" name="avatar_base64" id="avatar_base64">
 
@@ -113,17 +137,17 @@
                 <input type="email" name="email" value="<?= esc($user['email']) ?>" class="input-data w-full bg-transparent border-b-2 border-dashed border-gray-400 py-2 focus:outline-none text-sm font-bold text-gray-800 transition-all duration-300" readonly required>
             </div>
 
-            <?php if($user['peran'] !== 'siswa'): ?>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4 mb-5">
-                <div>
-                    <label class="block text-[10px] uppercase tracking-widest font-extrabold text-gray-400 mb-1">NIP</label>
-                    <input type="text" name="nip" value="<?= esc($user['nip']) ?>" class="input-data w-full bg-transparent border-b-2 border-dashed border-gray-400 py-2 focus:outline-none text-sm font-bold text-gray-800 transition-all duration-300" readonly>
+            <?php if ($user['peran'] !== 'siswa'): ?>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4 mb-5">
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-widest font-extrabold text-gray-400 mb-1">NIP</label>
+                        <input type="text" name="nip" value="<?= esc($user['nip']) ?>" class="input-data w-full bg-transparent border-b-2 border-dashed border-gray-400 py-2 focus:outline-none text-sm font-bold text-gray-800 transition-all duration-300" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-widest font-extrabold text-gray-400 mb-1">Jabatan</label>
+                        <input type="text" name="jabatan" value="<?= esc($user['jabatan']) ?>" class="input-data w-full bg-transparent border-b-2 border-dashed border-gray-400 py-2 focus:outline-none text-sm font-bold text-gray-800 transition-all duration-300" readonly>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-[10px] uppercase tracking-widest font-extrabold text-gray-400 mb-1">Jabatan</label>
-                    <input type="text" name="jabatan" value="<?= esc($user['jabatan']) ?>" class="input-data w-full bg-transparent border-b-2 border-dashed border-gray-400 py-2 focus:outline-none text-sm font-bold text-gray-800 transition-all duration-300" readonly>
-                </div>
-            </div>
             <?php endif; ?>
 
             <!-- Area Kata Sandi (Hanya muncul di Mode Edit) -->
@@ -133,7 +157,11 @@
                     <div class="relative">
                         <label class="block text-[10px] uppercase tracking-widest font-extrabold text-gray-400 mb-2">Kata Sandi LAMA</label>
                         <input type="password" id="sandiLama" name="kata_sandi_lama" placeholder="Ketik kata sandi saat ini" class="w-full neu-pressed px-4 py-3 rounded-xl focus:outline-none text-sm font-bold text-gray-700 pr-12">
-                        <button type="button" onclick="toggleSandi('sandiLama')" class="absolute right-4 top-8 text-xl text-gray-400 hover:text-blue-500">👁️</button>
+                        <button type="button"
+                            onclick="toggleSandi('sandiLama', this.querySelector('i'))"
+                            class="absolute right-4 top-8 text-gray-400 hover:text-blue-500">
+                            <i data-lucide="eye" class="w-5 h-5"></i>
+                        </button>
                     </div>
                     <div class="relative">
                         <label class="block text-[10px] uppercase tracking-widest font-extrabold text-gray-400 mb-2">Kata Sandi BARU</label>
@@ -145,54 +173,67 @@
 
             <!-- Tombol Aksi -->
             <div class="mt-8 flex gap-4">
-                <button type="button" id="btnEdit" onclick="aktifkanEdit()" class="w-full neu-pressed text-blue-600 font-extrabold py-3 rounded-xl hover:text-blue-800 transition active:scale-95 text-sm">
-                    ✏️ Edit Profil
+                <button
+                    type="button"
+                    id="btnEdit"
+                    onclick="aktifkanEdit()"
+                    class="w-full neu-flat text-blue-600 font-extrabold py-3 rounded-2xl flex items-center justify-center gap-2 hover:text-blue-800 transition">
+                    <i data-lucide="square-pen" class="w-4 h-4"></i>
+                    <span>Edit Profil</span>
                 </button>
-                <button type="submit" id="btnSimpan" class="hidden w-full bg-green-500 text-white font-extrabold py-3 rounded-xl shadow-lg hover:bg-green-600 transition active:scale-95 text-sm">
-                    💾 Simpan Perubahan
+                <button type="submit" id="btnSimpan" class="hidden w-full neu-flat text-green-600 font-extrabold py-3 rounded-2xl flex items-center justify-center gap-2 hover:text-green-700 transition">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    <span>Simpan Perubahan</span>
                 </button>
-                <button type="button" id="btnBatal" onclick="batalkanEdit()" class="hidden w-full neu-flat text-red-500 font-extrabold py-3 rounded-xl hover:text-red-700 transition active:scale-95 text-sm">
-                    Batal
+                <button type="button" id="btnBatal" onclick="batalkanEdit()" class="hidden w-full neu-flat text-red-600 font-extrabold py-3 rounded-2xl flex items-center justify-center gap-2 hover:text-red-700 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                    <span>Batal</span>
                 </button>
             </div>
         </form>
 
-                    <?php 
-            // Cek apakah siswa sudah punya kelas
-            $db = \Config\Database::connect();
-            $info_kelas = null;
-            if($user['peran'] == 'siswa' && $user['id_kelas']) {
-                $info_kelas = $db->table('kelas')
-                                 ->join('pengguna', 'pengguna.id_pengguna = kelas.id_guru')
-                                 ->where('kelas.id_kelas', $user['id_kelas'])
-                                 ->select('kelas.nama_kelas, pengguna.nama_lengkap as nama_guru')
-                                 ->get()->getRowArray();
-            }
-            ?>
+        <?php
+        // Cek apakah siswa sudah punya kelas
+        $db = \Config\Database::connect();
+        $info_kelas = null;
+        if ($user['peran'] == 'siswa' && $user['id_kelas']) {
+            $info_kelas = $db->table('kelas')
+                ->join('pengguna', 'pengguna.id_pengguna = kelas.id_guru')
+                ->where('kelas.id_kelas', $user['id_kelas'])
+                ->select('kelas.nama_kelas, pengguna.nama_lengkap as nama_guru')
+                ->get()->getRowArray();
+        }
+        ?>
 
-            <?php if($user['peran'] === 'siswa'): ?>
+        <?php if ($user['peran'] === 'siswa'): ?>
             <div class="mt-6 pt-6 border-t border-gray-300/50">
                 <h3 class="text-[10px] uppercase tracking-widest font-extrabold text-gray-400 mb-4">Integrasi Guru BK</h3>
-                
-                <?php if($info_kelas): ?>
+
+                <?php if ($info_kelas): ?>
                     <div class="neu-pressed p-4 rounded-xl flex justify-between items-center border-l-4 border-teal-500 bg-teal-50/30">
                         <div>
                             <p class="text-xs font-extrabold text-teal-700">Tergabung di: <?= esc($info_kelas['nama_kelas']) ?></p>
                             <p class="text-[10px] font-bold text-teal-600/80">Guru BK: <?= esc($info_kelas['nama_guru']) ?></p>
                         </div>
-                        <span class="text-2xl">🎓</span>
+                        <span class="text-2xl"><i data-lucide="graduation-cap"
+                                class="w-8 h-8 text-teal-600"></i></span>
                     </div>
                 <?php else: ?>
                     <div class="neu-flat p-4 rounded-xl border-l-4 border-orange-400">
                         <p class="text-xs font-bold text-gray-600 mb-3">Kamu belum terhubung dengan Guru BK. Masukkan kode undangan dari gurumu.</p>
                         <form action="/profil/gabung_kelas" method="POST" class="flex gap-2">
                             <input type="text" name="kode_kelas" placeholder="Masukkan 6 digit kode" class="w-full neu-pressed px-4 py-2 rounded-lg focus:outline-none text-sm font-bold text-gray-700 uppercase" required maxlength="15">
-                            <button type="submit" class="bg-orange-500 text-white font-extrabold px-4 py-2 rounded-lg shadow-md hover:bg-orange-600 transition active:scale-95 text-xs whitespace-nowrap">Gabung</button>
+                            <button
+                                type="submit"
+                                class="neu-flat text-orange-600 font-extrabold px-5 py-2 rounded-2xl hover:text-orange-700 transition flex items-center gap-2">
+                                <i data-lucide="link" class="w-4 h-4"></i>
+                                Gabung
+                            </button>
                         </form>
                     </div>
                 <?php endif; ?>
             </div>
-            <?php endif; ?>
+        <?php endif; ?>
     </div>
 
     <!-- Modal Popup Cropper -->
@@ -203,8 +244,20 @@
                 <img id="imageToCrop" src="" alt="Gambar untuk dicrop">
             </div>
             <div class="flex gap-4">
-                <button type="button" onclick="tutupCropper()" class="w-1/2 neu-flat text-gray-600 font-bold py-3 rounded-xl active:scale-95 text-sm">Batal</button>
-                <button type="button" onclick="terapkanCrop()" class="w-1/2 bg-blue-500 text-white font-bold py-3 rounded-xl active:scale-95 text-sm">Pilih Foto</button>
+                <button
+                    type="button"
+                    onclick="tutupCropper()"
+                    class="w-1/2 neu-flat text-blue-600 font-bold py-3 rounded-2xl flex items-center justify-center gap-2">
+                    <i data-lucide="x-circle" class="w-4 h-4"></i>
+                    Batal
+                </button>
+                <button
+                    type="button"
+                    onclick="terapkanCrop()"
+                    class="w-1/2 neu-flat text-blue-600 font-bold py-3 rounded-2xl flex items-center justify-center gap-2">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                    Pilih Foto
+                </button>
             </div>
         </div>
     </div>
@@ -245,9 +298,18 @@
             document.getElementById('formProfil').reset();
         }
 
-        function toggleSandi(id) {
-            const inputSandi = document.getElementById(id);
-            inputSandi.type = inputSandi.type === 'password' ? 'text' : 'password';
+        function toggleSandi(id, icon) {
+            const input = document.getElementById(id);
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+
+            lucide.createIcons();
         }
 
         // Logika Cropper (Sama seperti sebelumnya)
@@ -259,14 +321,24 @@
             const files = event.target.files;
             if (files && files.length > 0) {
                 const reader = new FileReader();
-                reader.onload = function (e) {
+                reader.onload = function(e) {
                     imageToCrop.src = e.target.result;
                     cropperModal.classList.remove('hidden');
-                    if (cropper) { cropper.destroy(); }
+                    if (cropper) {
+                        cropper.destroy();
+                    }
                     cropper = new Cropper(imageToCrop, {
-                        aspectRatio: 1, viewMode: 1, dragMode: 'move', autoCropArea: 1,
-                        restore: false, guides: false, center: false, highlight: false,
-                        cropBoxMovable: true, cropBoxResizable: false, toggleDragModeOnDblclick: false,
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        dragMode: 'move',
+                        autoCropArea: 1,
+                        restore: false,
+                        guides: false,
+                        center: false,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: false,
+                        toggleDragModeOnDblclick: false,
                     });
                 };
                 reader.readAsDataURL(files[0]);
@@ -275,11 +347,14 @@
 
         function tutupCropper() {
             cropperModal.classList.add('hidden');
-            document.getElementById('inputFoto').value = ''; 
+            document.getElementById('inputFoto').value = '';
         }
 
         function terapkanCrop() {
-            const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
+            const canvas = cropper.getCroppedCanvas({
+                width: 400,
+                height: 400
+            });
             const base64data = canvas.toDataURL('image/png');
             document.getElementById('avatar_base64').value = base64data;
             document.getElementById('avatarPreview').src = base64data;
@@ -292,122 +367,139 @@
     <!-- ============================================================== -->
     <nav class="fixed bottom-0 left-0 w-full bg-[#E0E5EC] rounded-t-3xl border-t border-white/50 z-50" style="box-shadow: 0 -10px 25px rgba(163,177,198,0.4);">
         <div class="max-w-5xl mx-auto px-2 md:px-6 py-3 flex justify-between items-center text-center">
-            
-            <?php 
+
+            <?php
             // Pengaman: Ubah peran dari database menjadi huruf kecil semua
-            $peran_akun = strtolower($user['peran']); 
+            $peran_akun = strtolower($user['peran']);
             ?>
 
-            <?php if($peran_akun === 'siswa'): ?>
+            <?php if ($peran_akun === 'siswa'): ?>
                 <!-- ================== NAVIGASI SISWA ================== -->
-                <a href="/siswa/beranda" class="flex flex-col items-center text-gray-400 hover:text-blue-600 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🏠</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Beranda</span> </a>
-                
-                <a href="/siswa/modul" class="flex flex-col items-center text-gray-400 hover:text-teal-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📚</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Belajar</span> </a>
-                
-                <a href="/siswa/simulasi" class="flex flex-col items-center text-gray-400 hover:text-orange-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🎮</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Latihan</span> </a>
-                
-                <a href="/siswa/jurnal" class="flex flex-col items-center text-gray-400 hover:text-purple-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📔</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Jurnal</span> </a>
-                
+                <a href="/siswa/beranda" class="flex flex-col items-center text-gray-400 hover:text-blue-600 transition transform hover:-translate-y-1 w-1/6"> <i data-lucide="house" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+                    <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Beranda</span> </a>
+
+                <a href="/siswa/modul" class="flex flex-col items-center text-gray-400 hover:text-teal-500 transition transform hover:-translate-y-1 w-1/6"> <i data-lucide="book-open" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Belajar</span> </a>
+
+                <a href="/siswa/simulasi" class="flex flex-col items-center text-gray-400 hover:text-orange-500 transition transform hover:-translate-y-1 w-1/6"> <i data-lucide="gamepad-2" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Latihan</span> </a>
+
+                <a href="/siswa/jurnal" class="flex flex-col items-center text-gray-400 hover:text-purple-500 transition transform hover:-translate-y-1 w-1/6"> <i data-lucide="notebook-pen" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Jurnal</span> </a>
+
                 <!-- Menu Profil (AKTIF - Menyala Biru) -->
-                <a href="/profil" class="flex flex-col items-center text-blue-600 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 drop-shadow-md">👤</span> <span class="text-[9px] md:text-[10px] font-extrabold truncate w-full">Profil</span> </a>
-                
-                <a href="/auth/logout" class="flex flex-col items-center text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🚪</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Keluar</span> </a>
+                <a href="/profil" class="flex flex-col items-center text-blue-600 transition transform hover:-translate-y-1 w-1/6"> <i data-lucide="user-round" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Profil</span> </a>
+
+                <a href="/auth/logout" class="flex flex-col items-center text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1 w-1/6"> <i data-lucide="log-out" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Keluar</span> </a>
 
 
-            <?php elseif($peran_akun === 'guru'): ?>
+            <?php elseif ($peran_akun === 'guru'): ?>
                 <!-- ================== NAVIGASI GURU ================== -->
-                <a href="/guru/beranda" class="flex flex-col items-center text-gray-400 hover:text-teal-600 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📊</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Beranda</span> </a>
-                
-                <a href="/guru/manajemen_kelas" class="flex flex-col items-center text-gray-400 hover:text-blue-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">👥</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Kelas</span> </a>
-                
-                <a href="/guru/intervensi_dini" class="flex flex-col items-center text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🚨</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Intervensi</span> </a>
-                
-                <a href="/guru/panduan_fasilitator" class="flex flex-col items-center text-gray-400 hover:text-orange-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📚</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Panduan</span> </a>
-                
-                <a href="/guru/laporan_cepat" class="flex flex-col items-center text-gray-400 hover:text-purple-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📄</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Laporan</span> </a>
-                
+                <a href="/guru/beranda" class="flex flex-col items-center text-gray-400 hover:text-teal-600 transition transform hover:-translate-y-1 w-1/6"><i data-lucide="layout-dashboard" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+                    <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Beranda</span>
+                </a>
+
+                <a href="/guru/manajemen_kelas" class="flex flex-col items-center text-gray-400 hover:text-blue-500 transition transform hover:-translate-y-1 w-1/6">
+                    <i data-lucide="users" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+                    <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Kelas</span>
+                </a>
+
+                <a href="/guru/intervensi_dini" class="flex flex-col items-center text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1 w-1/6"><i data-lucide="shield-alert" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+                    <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Intervensi</span>
+                </a>
+
+                <a href="/guru/panduan_fasilitator" class="flex flex-col items-center text-gray-400 hover:text-green-500 transition transform hover:-translate-y-1 w-1/6"> <i data-lucide="book-open" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+                    <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Panduan</span> </a>
+
+                <a href="/guru/laporan_cepat" class="flex flex-col items-center text-gray-400 hover:text-purple-500 transition transform hover:-translate-y-1 w-1/6"> <i data-lucide="file-bar-chart" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+                    <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Laporan</span> </a>
+
                 <!-- Menu Profil (AKTIF - Menyala Biru) -->
-                <a href="/profil" class="flex flex-col items-center text-blue-600 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 drop-shadow-md">👤</span> <span class="text-[9px] md:text-[10px] font-extrabold truncate w-full">Profil</span> </a>
+                <a href="/profil" class="flex flex-col items-center text-blue-600 transition transform hover:-translate-y-1 w-1/6"> <i data-lucide="user" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Profil</span> </a>
+
                 <a href="/auth/logout" class="flex flex-col items-center w-1/6 text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1">
-                <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🚪</span>
-                <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Keluar</span>
-            </a>
+                    <i data-lucide="log-out" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+                    <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Keluar</span>
+                </a>
 
 
             <?php else: ?>
-                <!-- ================== NAVIGASI ADMIN ================== -->
                 <!-- ============================================================== -->
-    <!-- DYNAMIC BOTTOM NAVIGATION BAR UNTUK HALAMAN ADMIN              -->
-    <!-- ============================================================== -->
-    <nav class="fixed bottom-0 left-0 w-full bg-[#E0E5EC] rounded-t-3xl border-t border-white/50 z-50" style="box-shadow: 0 -10px 25px rgba(163,177,198,0.4);">
-        <div class="max-w-5xl mx-auto px-2 md:px-6 py-3 flex justify-between items-center text-center">
-            
-            <a href="/admin/beranda" class="flex-1 flex flex-col items-center transition transform hover:-translate-y-1 text-gray-400"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🏠</span> <span class="text-[9px] md:text-[10px] font-extrabold truncate w-full">Beranda</span> </a>
-            
-            <a href="/admin/kelola_modul" class="flex-1 flex flex-col items-center text-gray-400 hover:text-teal-600 transition transform hover:-translate-y-1"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📚</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Modul</span> </a>
-            
-            <a href="/admin/kelola_simulasi" class="flex-1 flex flex-col items-center text-gray-400 hover:text-orange-500 transition transform hover:-translate-y-1"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🎮</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Simulasi</span> </a>
+                <!-- DYNAMIC BOTTOM NAVIGATION BAR UNTUK HALAMAN ADMIN              -->
+                <!-- ============================================================== -->
+                <nav class="fixed bottom-0 left-0 w-full bg-[#E0E5EC] rounded-t-3xl border-t border-white/50 z-50" style="box-shadow: 0 -10px 25px rgba(163,177,198,0.4);">
+                    <div class="max-w-5xl mx-auto px-2 md:px-6 py-3 flex justify-between items-center text-center">
 
-            <a href="/admin/kelola_kuesioner" class="flex-1 flex flex-col items-center text-gray-400 hover:text-green-600 transition transform hover:-translate-y-1"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📝</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Kuesioner</span> </a>
-            
-            <!-- ================== MENU AKSES (DROPUP) ================== -->
-            <div class="flex-1 relative flex flex-col items-center cursor-pointer group" onclick="document.getElementById('menuAkses').classList.toggle('hidden'); event.stopPropagation();">
-                <span class="text-xl md:text-2xl mb-1 grayscale group-hover:grayscale-0 transition transform group-hover:-translate-y-1 text-gray-400 group-hover:text-indigo-500">🔐</span>
-                
-                <!-- Teks "Akses" dengan Ikon Panah Ke Atas -->
-                <span class="text-[9px] md:text-[10px] font-bold truncate w-full text-gray-400 group-hover:text-indigo-500 flex items-center justify-center gap-0.5">
-                    Akses
-                    <svg class="w-2.5 h-2.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path>
-                    </svg>
-                </span>
-                
-                <!-- Popup Melayang -->
-                <div id="menuAkses" class="hidden absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 bg-white rounded-2xl shadow-xl border border-gray-200 w-36 py-2 flex flex-col z-50 transition-all">
-                    <!-- Segitiga penunjuk ke bawah -->
-                    <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-b border-r border-gray-200"></div>
-                    
-                    <a href="/admin/kelola_sekolah" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-green-600 hover:bg-green-50 transition border-b border-gray-100">
-                        <span class="mr-3 text-lg">🏫</span> Sekolah
-                    </a>
-                    <a href="/admin/manajemen_pengguna" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
-                        <span class="mr-3 text-lg">👥</span> Pengguna
-                    </a>
-                    <a href="/admin/kelola_tips" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
-                        <span class="mr-3 text-lg">💡</span> Afirmasi
-                    </a>
-                    <a href="/admin/kelola_panduan" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
-                        <span class="mr-3 text-lg">📚</span> Panduan 
-                    </a>
-                </div>
-            </div>
-            <!-- ========================================================= -->
-            
-            <a href="/admin/ekspor_riset" class="flex-1 flex flex-col items-center text-gray-400 hover:text-purple-600 transition transform hover:-translate-y-1"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📥</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Ekspor</span> </a>
-            
-            <a href="/profil" class="flex-1 flex flex-col items-center text-blue-600 hover:text-blue-600 transition transform hover:-translate-y-1"> <span class="text-xl md:text-2xl mb-1 drop-shadow-md">👤</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Profil</span> </a>
-            
-            <a href="/auth/logout" class="flex-1 flex flex-col items-center text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1">
-                <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🚪</span>
-                <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Keluar</span>
-            </a>
-        </div>
-    </nav>
+                        <a href="/admin/beranda" class="flex-1 flex flex-col items-center text-gray-400 hover:text-blue-500 transition transform hover:-translate-y-1"> <i data-lucide="house" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-extrabold truncate w-full">Beranda</span> </a>
 
-    <!-- Script agar menu dropup tertutup otomatis jika area lain di layar diklik -->
-    <script>
-        document.addEventListener('click', function(event) {
-            const menuAkses = document.getElementById('menuAkses');
-            if (menuAkses && !menuAkses.classList.contains('hidden')) {
-                menuAkses.classList.add('hidden');
-            }
-        });
-    </script>
+                        <a href="/admin/kelola_modul" class="flex-1 flex flex-col items-center text-gray-400 hover:text-teal-500 transition transform hover:-translate-y-1"> <i data-lucide="book-open" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Modul</span> </a>
+
+                        <a href="/admin/kelola_simulasi" class="flex-1 flex flex-col items-center text-gray-400 hover:text-teal-500 transition transform hover:-translate-y-1"> <i data-lucide="gamepad-2" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Simulasi</span> </a>
+
+                        <a href="/admin/kelola_kuesioner" class="flex-1 flex flex-col items-center text-gray-400 hover:text-teal-500 transition transform hover:-translate-y-1"> <i data-lucide="clipboard-list" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Kuesioner</span> </a>
+
+                        <!-- ================== MENU AKSES (DROPUP) ================== -->
+                        <div class="flex-1 relative flex flex-col items-center cursor-pointer group" onclick="document.getElementById('menuAkses').classList.toggle('hidden'); event.stopPropagation();">
+                            <i data-lucide="shield-check"
+                                class="w-5 h-5 md:w-6 md:h-6 mb-1 text-gray-400 group-hover:text-indigo-500"></i>
+
+                            <!-- Teks "Akses" dengan Ikon Panah Ke Atas -->
+                            <span class="text-[9px] md:text-[10px] font-bold truncate w-full text-gray-400 group-hover:text-indigo-500 flex items-center justify-center gap-0.5">
+                                Akses
+                                <svg class="w-2.5 h-2.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path>
+                                </svg>
+                            </span>
+
+                            <!-- Popup Melayang -->
+                            <div id="menuAkses" class="hidden absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 bg-white rounded-2xl shadow-xl border border-gray-200 w-36 py-2 flex flex-col z-50 transition-all">
+                                <!-- Segitiga penunjuk ke bawah -->
+                                <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-b border-r border-gray-200"></div>
+
+                                <a href="/admin/kelola_sekolah" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-green-600 hover:bg-green-50 transition border-b border-gray-100">
+                                    <i data-lucide="school" class="w-4 h-4 mr-3"></i> Sekolah
+                                </a>
+                                <a href="/admin/manajemen_pengguna" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
+                                    <i data-lucide="users" class="w-4 h-4 mr-3"></i> Pengguna
+                                </a>
+                                <a href="/admin/kelola_tips" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
+                                    <i data-lucide="lightbulb" class="w-4 h-4 mr-3"></i> Afirmasi
+                                </a>
+                                <a href="/admin/kelola_panduan" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
+                                    <i data-lucide="book" class="w-4 h-4 mr-3"></i> Panduan
+                                </a>
+                            </div>
+                        </div>
+                        <!-- ========================================================= -->
+
+                        <a href="/admin/ekspor_riset" class="flex-1 flex flex-col items-center text-gray-400 hover:text-teal-500 transition transform hover:-translate-y-1"> <i data-lucide="download" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Ekspor</span> </a>
+
+                        <a href="/profil" class="flex-1 flex flex-col items-center transition transform hover:-translate-y-1 text-blue-600"> <i data-lucide="user" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Profil</span> </a>
+
+                        <a href="/auth/logout" class="flex-1 flex flex-col items-center text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1">
+                            <i data-lucide="log-out" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+                            <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Keluar</span>
+                        </a>
+                    </div>
+                </nav>
+
+                <!-- Script agar menu dropup tertutup otomatis jika area lain di layar diklik -->
+                <script>
+                    document.addEventListener('click', function(event) {
+                        const menuAkses = document.getElementById('menuAkses');
+                        if (menuAkses && !menuAkses.classList.contains('hidden')) {
+                            menuAkses.classList.add('hidden');
+                        }
+                    });
+                </script>
 
             <?php endif; ?>
-            
+
         </div>
     </nav>
 
 </body>
+
 </html>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    lucide.createIcons();
+</script>

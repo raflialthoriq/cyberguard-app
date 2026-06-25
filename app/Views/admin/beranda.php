@@ -13,6 +13,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - CyberGuard</title>
+    <link rel="icon" type="image/png" href="/public/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #E0E5EC; }
@@ -29,17 +30,18 @@
     <nav class="fixed bottom-0 left-0 w-full bg-[#E0E5EC] rounded-t-3xl border-t border-white/50 z-50" style="box-shadow: 0 -10px 25px rgba(163,177,198,0.4);">
         <div class="max-w-5xl mx-auto px-2 md:px-6 py-3 flex justify-between items-center text-center">
             
-            <a href="/admin/beranda" class="flex-1 flex flex-col items-center transition transform hover:-translate-y-1 text-blue-600"> <span class="text-xl md:text-2xl mb-1 drop-shadow-md">🏠</span> <span class="text-[9px] md:text-[10px] font-extrabold truncate w-full">Beranda</span> </a>
+            <a href="/admin/beranda" class="flex-1 flex flex-col items-center transition transform hover:-translate-y-1 text-blue-600"> <i data-lucide="house" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-extrabold truncate w-full">Beranda</span> </a>
             
-            <a href="/admin/kelola_modul" class="flex-1 flex flex-col items-center text-gray-400 hover:text-teal-600 transition transform hover:-translate-y-1"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📚</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Modul</span> </a>
+            <a href="/admin/kelola_modul" class="flex-1 flex flex-col items-center text-gray-400 hover:text-teal-600 transition transform hover:-translate-y-1"> <i data-lucide="book-open" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Modul</span> </a>
             
-            <a href="/admin/kelola_simulasi" class="flex-1 flex flex-col items-center text-gray-400 hover:text-orange-500 transition transform hover:-translate-y-1"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🎮</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Simulasi</span> </a>
+            <a href="/admin/kelola_simulasi" class="flex-1 flex flex-col items-center text-gray-400 hover:text-orange-500 transition transform hover:-translate-y-1"> <i data-lucide="gamepad-2" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Simulasi</span> </a>
 
-            <a href="/admin/kelola_kuesioner" class="flex-1 flex flex-col items-center text-gray-400 hover:text-green-600 transition transform hover:-translate-y-1"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📝</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Kuesioner</span> </a>
+            <a href="/admin/kelola_kuesioner" class="flex-1 flex flex-col items-center text-gray-400 hover:text-green-600 transition transform hover:-translate-y-1"> <i data-lucide="clipboard-list" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Kuesioner</span> </a>
             
             <!-- ================== MENU AKSES (DROPUP) ================== -->
             <div class="flex-1 relative flex flex-col items-center cursor-pointer group" onclick="document.getElementById('menuAkses').classList.toggle('hidden'); event.stopPropagation();">
-                <span class="text-xl md:text-2xl mb-1 grayscale group-hover:grayscale-0 transition transform group-hover:-translate-y-1 text-gray-400 group-hover:text-indigo-500">🔐</span>
+               <i data-lucide="shield-check"
+   class="w-5 h-5 md:w-6 md:h-6 mb-1 text-gray-400 group-hover:text-indigo-500"></i>
                 
                 <!-- Teks "Akses" dengan Ikon Panah Ke Atas -->
                 <span class="text-[9px] md:text-[10px] font-bold truncate w-full text-gray-400 group-hover:text-indigo-500 flex items-center justify-center gap-0.5">
@@ -55,27 +57,27 @@
                     <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-b border-r border-gray-200"></div>
                     
                     <a href="/admin/kelola_sekolah" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-green-600 hover:bg-green-50 transition border-b border-gray-100">
-                        <span class="mr-3 text-lg">🏫</span> Sekolah
+                        <i data-lucide="school" class="w-4 h-4 mr-3"></i> Sekolah
                     </a>
                     <a href="/admin/manajemen_pengguna" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
-                        <span class="mr-3 text-lg">👥</span> Pengguna
+                        <i data-lucide="users" class="w-4 h-4 mr-3"></i> Pengguna
                     </a>
                     <a href="/admin/kelola_tips" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
-                        <span class="mr-3 text-lg">💡</span> Afirmasi
+                        <i data-lucide="lightbulb" class="w-4 h-4 mr-3"></i> Afirmasi
                     </a>
                     <a href="/admin/kelola_panduan" class="flex items-center px-4 py-3 text-xs font-bold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition border-b border-gray-100">
-                        <span class="mr-3 text-lg">📚</span> Panduan 
+                        <i data-lucide="book" class="w-4 h-4 mr-3"></i> Panduan 
                     </a>
                 </div>
             </div>
             <!-- ========================================================= -->
             
-            <a href="/admin/ekspor_riset" class="flex-1 flex flex-col items-center text-gray-400 hover:text-purple-600 transition transform hover:-translate-y-1"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📥</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Ekspor</span> </a>
+            <a href="/admin/ekspor_riset" class="flex-1 flex flex-col items-center text-gray-400 hover:text-purple-600 transition transform hover:-translate-y-1"> <i data-lucide="download" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Ekspor</span> </a>
             
-            <a href="/profil" class="flex-1 flex flex-col items-center text-gray-400 hover:text-blue-600 transition transform hover:-translate-y-1"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">👤</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Profil</span> </a>
+            <a href="/profil" class="flex-1 flex flex-col items-center text-gray-400 hover:text-blue-600 transition transform hover:-translate-y-1"> <i data-lucide="user" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Profil</span> </a>
             
             <a href="/auth/logout" class="flex-1 flex flex-col items-center text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1">
-                <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🚪</span>
+                <i data-lucide="log-out" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
                 <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Keluar</span>
             </a>
         </div>
@@ -120,7 +122,10 @@
         
         <!-- Grafik Penyelesaian Modul -->
         <div class="neu-flat p-4 rounded-3xl">
-            <h3 class="font-extrabold text-gray-800 text-xs mb-2">📈 Partisipasi per Modul</h3>
+            <h3 class="font-extrabold text-gray-800 text-xs mb-2 flex items-center gap-2">
+    <i data-lucide="chart-column" class="w-4 h-4 text-blue-600"></i>
+    Partisipasi per Modul
+</h3>
             <div class="relative h-40 w-full">
                 <canvas id="modulChart"></canvas>
             </div>
@@ -128,7 +133,10 @@
 
         <!-- Grafik Pengisian Kuesioner -->
         <div class="neu-flat p-4 rounded-3xl">
-            <h3 class="font-extrabold text-gray-800 text-xs mb-2">📊 Responden Kuesioner</h3>
+            <h3 class="font-extrabold text-gray-800 text-xs mb-2 flex items-center gap-2">
+    <i data-lucide="chart-pie" class="w-4 h-4 text-green-600"></i>
+    Responden Kuesioner
+</h3>
             <div class="relative h-40 w-full">
                 <canvas id="kuesionerChart"></canvas>
             </div>
@@ -232,7 +240,7 @@
         <!-- Tabel Aktivitas Kuis Terbaru -->
         <div class="neu-flat p-6 rounded-3xl flex flex-col">
             <h2 class="font-bold text-gray-800 mb-6 border-b-2 border-gray-300 pb-2 flex items-center">
-                <span class="mr-2">📝</span> Progres Kuis Terbaru
+                <i data-lucide="clipboard-list" class="w-5 h-5 mr-2"></i> Progres Kuis Terbaru
             </h2>
             <div class="space-y-4 overflow-y-auto pr-2">
                 <?php if(empty($progres_terbaru)): ?>
@@ -255,7 +263,7 @@
         <!-- Tabel Aktivitas Simulasi CBT Terbaru -->
         <div class="neu-flat p-6 rounded-3xl flex flex-col">
             <h2 class="font-bold text-gray-800 mb-6 border-b-2 border-gray-300 pb-2 flex items-center">
-                <span class="mr-2">🎮</span> Riwayat Simulasi CBT Terakhir
+                <i data-lucide="gamepad2" class="w-5 h-5 mr-2"></i> Riwayat Simulasi CBT Terakhir
             </h2>
             <div class="space-y-4 overflow-y-auto pr-2">
                 <?php if(empty($simulasi_terbaru)): ?>
@@ -281,3 +289,9 @@
 
 </body>
 </html>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<script>
+    lucide.createIcons();
+</script>

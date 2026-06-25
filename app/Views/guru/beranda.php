@@ -1,34 +1,69 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Guru BK - CyberGuard</title>
+    <title>Beranda Guru - CyberGuard</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #E0E5EC; }
-        .neu-flat { box-shadow: 7px 7px 14px rgb(163,177,198,0.6), -7px -7px 14px rgba(255,255,255,0.7); background-color: #E0E5EC; }
-        .neu-pressed { box-shadow: inset 6px 6px 10px 0 rgba(163,177,198,0.7), inset -6px -6px 10px 0 rgba(255,255,255,1); background-color: #E0E5EC; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body {
+            background-color: #E0E5EC;
+        }
+
+        .neu-flat {
+            box-shadow: 7px 7px 14px rgb(163, 177, 198, 0.6), -7px -7px 14px rgba(255, 255, 255, 0.7);
+            background-color: #E0E5EC;
+        }
+
+        .neu-pressed {
+            box-shadow: inset 6px 6px 10px 0 rgba(163, 177, 198, 0.7), inset -6px -6px 10px 0 rgba(255, 255, 255, 1);
+            background-color: #E0E5EC;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
 
 <nav class="fixed bottom-0 left-0 w-full bg-[#E0E5EC] rounded-t-3xl border-t border-white/50 z-50" style="box-shadow: 0 -10px 25px rgba(163,177,198,0.4);">
-        <div class="max-w-5xl mx-auto px-2 md:px-6 py-3 flex justify-between items-center text-center">
-            <a href="/guru/beranda" class="flex flex-col items-center text-teal-600 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 drop-shadow-md">📊</span> <span class="text-[9px] md:text-[10px] font-extrabold truncate w-full">Beranda</span> </a>
-            <a href="/guru/manajemen_kelas" class="flex flex-col items-center text-gray-400 hover:text-blue-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">👥</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Kelas</span> </a>
-            <a href="/guru/intervensi_dini" class="flex flex-col items-center text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🚨</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Intervensi</span> </a>
-            <a href="/guru/panduan_fasilitator" class="flex flex-col items-center text-gray-400 hover:text-orange-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📚</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Panduan</span> </a>
-            <a href="/guru/laporan_cepat" class="flex flex-col items-center text-gray-400 hover:text-purple-500 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">📄</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Laporan</span> </a>
-            <a href="/profil" class="flex flex-col items-center text-gray-400 hover:text-blue-600 transition transform hover:-translate-y-1 w-1/6"> <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">👤</span> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Profil</span> </a>
-            <a href="/auth/logout" class="flex flex-col items-center w-1/6 text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1">
-                <span class="text-xl md:text-2xl mb-1 grayscale hover:grayscale-0">🚪</span>
-                <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Keluar</span>
-            </a>
-        </div>
-    </nav>
-    
+    <div class="max-w-5xl mx-auto px-2 md:px-6 py-3 flex justify-between items-center text-center">
+        <a href="/guru/beranda" class="flex flex-col items-center text-teal-600 hover:text-teal-600 transition transform hover:-translate-y-1 w-1/6"><i data-lucide="layout-dashboard" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+            <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Beranda</span>
+        </a>
+
+        <a href="/guru/manajemen_kelas" class="flex flex-col items-center text-gray-400 hover:text-blue-500 transition transform hover:-translate-y-1 w-1/6">
+            <i data-lucide="users" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+            <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Kelas</span>
+        </a>
+
+        <a href="/guru/intervensi_dini" class="flex flex-col items-center text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1 w-1/6"><i data-lucide="shield-alert" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+            <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Intervensi</span>
+        </a>
+
+        <a href="/guru/panduan_fasilitator" class="flex flex-col items-center text-gray-400 hover:text-green-500 transition transform hover:-translate-y-1 w-1/6"> <i data-lucide="book-open" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+            <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Panduan</span> </a>
+
+        <a href="/guru/laporan_cepat" class="flex flex-col items-center text-gray-400 hover:text-purple-500 transition transform hover:-translate-y-1 w-1/6"> <i data-lucide="file-bar-chart" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+            <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Laporan</span> </a>
+
+        <!-- Menu Profil (AKTIF - Menyala Biru) -->
+        <a href="/profil" class="flex flex-col items-center text-gray-400 transition transform hover:-translate-y-1 w-1/6 hover:text-blue-400"> <i data-lucide="user" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i> <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Profil</span> </a>
+
+        <a href="/auth/logout" class="flex flex-col items-center w-1/6 text-gray-400 hover:text-red-500 transition transform hover:-translate-y-1">
+            <i data-lucide="log-out" class="w-5 h-5 md:w-6 md:h-6 mb-1"></i>
+            <span class="text-[9px] md:text-[10px] font-bold truncate w-full">Keluar</span>
+        </a>
+    </div>
+</nav>
+
 <body class="pb-28 p-4 p-6 font-sans text-gray-700 min-h-screen flex flex-col relative">
 
     <!-- Header & Profil -->
@@ -36,7 +71,7 @@
         <div class="flex items-center space-x-4">
             <!-- Avatar Inisial (Bisa diganti dinamis nanti) -->
             <div class="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center text-blue-600 font-bold text-2xl md:text-3xl border-2 border-white overflow-hidden neu-pressed">
-                <?php if(session()->get('url_avatar')): ?>
+                <?php if (session()->get('url_avatar')): ?>
                     <img src="/<?= esc(session()->get('url_avatar')) ?>" alt="Avatar" class="w-full h-full object-cover">
                 <?php else: ?>
                     <?= strtoupper(substr(session()->get('nama_panggilan'), 0, 1)) ?>
@@ -53,8 +88,10 @@
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8">
         <!-- Card 1: Total Siswa -->
         <div class="neu-flat p-5 rounded-3xl flex flex-col justify-center items-center text-center">
-            <a href="/guru/total_siswa_aktif" class="block cursor-pointer transition transform hover:scale-95"><h3 class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Total Siswa Aktif</h3></a>
-           <span class="text-4xl font-black text-blue-600"><?= $total_siswa ?></span>
+            <a href="/guru/total_siswa_aktif" class="block cursor-pointer transition transform hover:scale-95">
+                <h3 class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Total Siswa Aktif</h3>
+            </a>
+            <span class="text-4xl font-black text-blue-600"><?= $total_siswa ?></span>
             <p class="text-[10px] text-gray-400 mt-2">Siswa terdaftar</p>
         </div>
 
@@ -67,34 +104,42 @@
 
         <!-- Card 3: Perlu Perhatian -->
         <div class="neu-flat p-5 rounded-3xl flex flex-col justify-center items-center text-center col-span-2 md:col-span-1">
-            <a href="/guru/siswa_perhatian" class="block cursor-pointer transition transform hover:scale-95"><h3 class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Siswa Perlu Perhatian</h3>
-            <span class="text-4xl font-black text-red-500"><?= $siswa_perhatian ?></span>
-            <p class="text-[10px] text-gray-400 mt-2">Butuh intervensi dini</p></a>
-            
+            <a href="/guru/siswa_perhatian" class="block cursor-pointer transition transform hover:scale-95">
+                <h3 class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Siswa Perlu Perhatian</h3>
+                <span class="text-4xl font-black text-red-500"><?= $siswa_perhatian ?></span>
+                <p class="text-[10px] text-gray-400 mt-2">Butuh intervensi dini</p>
+            </a>
+
         </div>
     </div>
 
     <div class="neu-flat p-5 rounded-3xl mb-8">
-    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Aktivitas Belajar Siswa Minggu Ini</h3>
-    <div class="flex items-end justify-between h-40 pt-4 px-2">
-        <?php 
-        // Cari nilai tertinggi untuk kalkulasi skala persentase grafik
-        $max_value = max(array_column($aktivitas_harian, 'jumlah'));
-        if($max_value == 0) $max_value = 1; 
-        
-        foreach($aktivitas_harian as $act): 
-            $height_percentage = ($act['jumlah'] / $max_value) * 100;
-            // Set minimal tinggi 8% agar batang tetap terlihat estetik walaupun bernilai 0
-            if($height_percentage < 8) $height_percentage = 8; 
-        ?>
-            <div class="flex flex-col items-center w-1/7 h-full justify-end">
-                <span class="text-[9px] font-black text-indigo-600 mb-1"><?= $act['jumlah'] ?>x</span>
-                <div class="w-6 md:w-8 bg-gradient-to-t from-indigo-500 to-purple-500 rounded-t-lg transition-all duration-500 shadow-md" style="height: <?= $height_percentage ?>%"></div>
-                <span class="text-[10px] font-bold text-gray-400 mt-2"><?= $act['hari'] ?></span>
-            </div>
-        <?php endforeach; ?>
+        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Aktivitas Belajar Siswa Minggu Ini</h3>
+        <div class="flex items-end justify-between h-40 pt-4 px-2">
+            <?php
+            // Cari nilai tertinggi untuk kalkulasi skala persentase grafik
+            $max_value = max(array_column($aktivitas_harian, 'jumlah'));
+            if ($max_value == 0) $max_value = 1;
+
+            foreach ($aktivitas_harian as $act):
+                $height_percentage = ($act['jumlah'] / $max_value) * 100;
+                // Set minimal tinggi 8% agar batang tetap terlihat estetik walaupun bernilai 0
+                if ($height_percentage < 8) $height_percentage = 8;
+            ?>
+                <div class="flex flex-col items-center w-1/7 h-full justify-end">
+                    <span class="text-[9px] font-black text-indigo-600 mb-1"><?= $act['jumlah'] ?>x</span>
+                    <div class="w-6 md:w-8 bg-gradient-to-t from-indigo-500 to-purple-500 rounded-t-lg transition-all duration-500 shadow-md" style="height: <?= $height_percentage ?>%"></div>
+                    <span class="text-[10px] font-bold text-gray-400 mt-2"><?= $act['hari'] ?></span>
+                </div>
+            <?php endforeach; ?>
+        </div>
     </div>
-</div>
 
 </body>
+
 </html>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    lucide.createIcons();
+</script>

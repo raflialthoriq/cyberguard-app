@@ -9,15 +9,15 @@ class Admin extends BaseController
 {
     public function beranda()
     {
-       if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-    }
+        if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
+            return redirect()->to('/auth');
+        }
 
-    $db = \Config\Database::connect();
-    $penggunaModel = new \App\Models\PenggunaModel();
-    $modulModel = new \App\Models\ModulBelajarModel();
+        $db = \Config\Database::connect();
+        $penggunaModel = new \App\Models\PenggunaModel();
+        $modulModel = new \App\Models\ModulBelajarModel();
 
-    // =========================================================
+        // =========================================================
         // 1. AMBIL DATA UNTUK GRAFIK MODUL SECARA DINAMIS
         // =========================================================
         // Query: Ambil semua judul modul, dan hitung berapa banyak siswa yang statusnya 'selesai' di modul tersebut
@@ -80,7 +80,7 @@ class Admin extends BaseController
             'array_jumlah_siswa_selesai' => $array_jumlah_siswa_selesai,
             'array_nama_kuesioner'       => $array_nama_kuesioner,
             'array_jumlah_responden'     => $array_jumlah_responden,
-            
+
             // Variabel ini untuk angka tebal di atas grafik (Card Statistik)
             'total_modul_selesai'        => $total_siswa_lulus_modul,
             'total_kuesioner_diisi'      => $total_responden
@@ -116,8 +116,8 @@ class Admin extends BaseController
 
         return view('admin/beranda', $data);
     }
-    
-// Fungsi untuk menampilkan daftar modul yang ada di database
+
+    // Fungsi untuk menampilkan daftar modul yang ada di database
     public function kelola_modul()
     {
         // Pastikan hanya admin yang bisa akses
@@ -126,7 +126,7 @@ class Admin extends BaseController
         }
 
         $modulModel = new ModulBelajarModel();
-        
+
         $data = [
             'daftar_modul' => $modulModel->orderBy('urutan_modul', 'ASC')->findAll()
         ];
@@ -148,11 +148,11 @@ class Admin extends BaseController
     public function simpan_modul()
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
+            return redirect()->to('/auth');
+        }
 
         $modulModel = new ModulBelajarModel();
-        
+
         // Ambil input tipe media
         $tipe_media = $this->request->getPost('tipe_media');
         $nama_file = null;
@@ -187,14 +187,14 @@ class Admin extends BaseController
     // ==========================================
     // LANJUTAN CRUD MODUL
     // ==========================================
-    
+
     public function hapus_modul($id_modul)
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
+            return redirect()->to('/auth');
+        }
         $modulModel = new ModulBelajarModel();
-        
+
         // Opsional: Hapus file fisik jika ada
         $modul = $modulModel->find($id_modul);
         if ($modul && in_array($modul['tipe_media'], ['gambar', 'dokumen', 'audio']) && !empty($modul['file_media'])) {
@@ -210,8 +210,8 @@ class Admin extends BaseController
     public function edit_modul($id_modul)
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
+            return redirect()->to('/auth');
+        }
         $modulModel = new ModulBelajarModel();
         $data['modul'] = $modulModel->find($id_modul);
         return view('admin/edit_modul', $data);
@@ -220,12 +220,12 @@ class Admin extends BaseController
     public function update_modul($id_modul)
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
-        
+            return redirect()->to('/auth');
+        }
+
         $modulModel = new ModulBelajarModel();
         $modul_lama = $modulModel->find($id_modul);
-        
+
         $tipe_media = $this->request->getPost('tipe_media');
         $url_youtube = $this->request->getPost('url_youtube');
         $nama_file = $modul_lama['file_media']; // Secara default, pertahankan file lama
@@ -233,12 +233,12 @@ class Admin extends BaseController
         // Jika tipe media butuh file (gambar, dokumen, audio)
         if (in_array($tipe_media, ['gambar', 'dokumen', 'audio'])) {
             $file = $this->request->getFile('file_media');
-            
+
             // Cek apakah ada file BARU yang diunggah
             if ($file && $file->isValid() && ! $file->hasMoved()) {
                 $nama_file = $file->getRandomName();
                 $file->move('uploads/modul', $nama_file);
-                
+
                 // Hapus file lama dari server untuk menghemat memori
                 if (!empty($modul_lama['file_media']) && file_exists('uploads/modul/' . $modul_lama['file_media'])) {
                     unlink('uploads/modul/' . $modul_lama['file_media']);
@@ -277,8 +277,8 @@ class Admin extends BaseController
     public function kelola_simulasi()
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
+            return redirect()->to('/auth');
+        }
         $simulasiModel = new \App\Models\SkenarioSimulasiModel();
         $data['daftar_simulasi'] = $simulasiModel->findAll();
         return view('admin/kelola_simulasi', $data);
@@ -287,77 +287,116 @@ class Admin extends BaseController
     public function tambah_simulasi()
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
+            return redirect()->to('/auth');
+        }
         return view('admin/tambah_simulasi');
     }
 
     public function hapus_simulasi($id_skenario)
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
+            return redirect()->to('/auth');
+        }
         $simulasiModel = new \App\Models\SkenarioSimulasiModel();
         $simulasiModel->delete($id_skenario);
         session()->setFlashdata('pesan', 'Skenario Simulasi berhasil dihapus!');
-        return redirect()->to('/admin/kelola_simulasi');
-    }
-    public function simpan_simulasi()
-    {
-        if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
-        $simulasiModel = new \App\Models\SkenarioSimulasiModel();
-        $opsiModel = new \App\Models\OpsiSimulasiModel();
-
-        // 1. Simpan kasus utamanya dulu
-        $simulasiModel->insert([
-            'judul_simulasi'  => $this->request->getPost('judul_simulasi'),
-            'deskripsi_kasus' => $this->request->getPost('deskripsi_kasus'),
-        ]);
-        
-        $id_skenario_baru = $simulasiModel->getInsertID();
-
-        // 2. Tangkap input opsi yang berbentuk Array dari form dinamis
-        $teks_opsi = $this->request->getPost('teks_opsi');
-        $feedback_opsi = $this->request->getPost('feedback_opsi');
-        $skor_opsi = $this->request->getPost('skor_opsi');
-
-        // 3. Looping dan simpan semua opsi tersebut ke tabel opsi_simulasi
-        if (!empty($teks_opsi)) {
-            for ($i = 0; $i < count($teks_opsi); $i++) {
-                $opsiModel->save([
-                    'id_skenario'   => $id_skenario_baru,
-                    'teks_opsi'     => $teks_opsi[$i],
-                    'feedback_opsi' => $feedback_opsi[$i],
-                    'skor_opsi'     => $skor_opsi[$i]
-                ]);
-            }
-        }
-
-        session()->setFlashdata('pesan', 'Skenario beserta opsi dinamisnya berhasil ditambahkan!');
         return redirect()->to('/admin/kelola_simulasi');
     }
 
     public function edit_simulasi($id_skenario)
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
+            return redirect()->to('/auth');
+        }
         $simulasiModel = new \App\Models\SkenarioSimulasiModel();
         $opsiModel = new \App\Models\OpsiSimulasiModel();
-        
+
         $data['skenario'] = $simulasiModel->find($id_skenario);
         $data['daftar_opsi'] = $opsiModel->where('id_skenario', $id_skenario)->findAll();
-        
+
         return view('admin/edit_simulasi', $data);
+    }
+
+    // ==========================================
+    // CRUD SKENARIO SIMULASI (MENDUKUNG MULTI-KASUS)
+    // ==========================================
+    public function simpan_simulasi()
+    {
+        if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
+            return redirect()->to('/auth');
+        }
+
+        $db = \Config\Database::connect();
+        $simulasiModel = new \App\Models\SkenarioSimulasiModel();
+        $opsiModel = new \App\Models\OpsiSimulasiModel();
+
+        $judul_simulasi = $this->request->getPost('judul_simulasi');
+        $studi_kasus = $this->request->getPost('studi_kasus'); // Menangkap form array multidimensi dari View
+
+        // Memulai transaksi agar jika ada 1 yang gagal, semua dibatalkan (mencegah data korup)
+        $db->transStart();
+
+        if (!empty($studi_kasus) && is_array($studi_kasus)) {
+            foreach ($studi_kasus as $kasus) {
+                // 1. Simpan Studi Kasus ke tabel skenario_simulasi
+                $simulasiModel->insert([
+                    'judul_simulasi'  => $judul_simulasi,
+                    'deskripsi_kasus' => $kasus['deskripsi']
+                ]);
+
+                $id_skenario_baru = $simulasiModel->getInsertID();
+
+                // 2. Simpan semua opsi jawabannya
+                if (!empty($kasus['opsi']) && is_array($kasus['opsi'])) {
+                    foreach ($kasus['opsi'] as $opsi) {
+                        $opsiModel->insert([
+                            'id_skenario'   => $id_skenario_baru,
+                            'teks_opsi'     => $opsi['teks'],
+                            'skor_opsi'     => (int)$opsi['skor'],
+                            'feedback_opsi' => $opsi['feedback']
+                        ]);
+                    }
+                }
+            }
+        } else {
+            // Fallback jika admin hanya mengirim 1 kasus (format form lama)
+            $simulasiModel->insert([
+                'judul_simulasi'  => $judul_simulasi,
+                'deskripsi_kasus' => $this->request->getPost('deskripsi_kasus'),
+            ]);
+            $id_skenario_baru = $simulasiModel->getInsertID();
+
+            $teks_opsi = $this->request->getPost('teks_opsi');
+            $feedback_opsi = $this->request->getPost('feedback_opsi');
+            $skor_opsi = $this->request->getPost('skor_opsi');
+
+            if (!empty($teks_opsi)) {
+                for ($i = 0; $i < count($teks_opsi); $i++) {
+                    $opsiModel->save([
+                        'id_skenario'   => $id_skenario_baru,
+                        'teks_opsi'     => $teks_opsi[$i],
+                        'feedback_opsi' => $feedback_opsi[$i],
+                        'skor_opsi'     => $skor_opsi[$i]
+                    ]);
+                }
+            }
+        }
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->back()->with('error', 'Gagal menyimpan. Terjadi kesalahan pada database.');
+        }
+
+        session()->setFlashdata('pesan', 'Skenario Anda berhasil ditambahkan!');
+        return redirect()->to('/admin/kelola_simulasi');
     }
 
     public function update_simulasi($id_skenario)
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
+            return redirect()->to('/auth');
+        }
         $simulasiModel = new \App\Models\SkenarioSimulasiModel();
         $opsiModel = new \App\Models\OpsiSimulasiModel();
 
@@ -377,12 +416,15 @@ class Admin extends BaseController
 
         if (!empty($teks_opsi)) {
             for ($i = 0; $i < count($teks_opsi); $i++) {
-                $opsiModel->save([
-                    'id_skenario'   => $id_skenario,
-                    'teks_opsi'     => $teks_opsi[$i],
-                    'feedback_opsi' => $feedback_opsi[$i],
-                    'skor_opsi'     => $skor_opsi[$i]
-                ]);
+                // Pastikan teks opsi tidak kosong sebelum disimpan
+                if (!empty(trim($teks_opsi[$i]))) {
+                    $opsiModel->save([
+                        'id_skenario'   => $id_skenario,
+                        'teks_opsi'     => $teks_opsi[$i],
+                        'feedback_opsi' => $feedback_opsi[$i],
+                        'skor_opsi'     => $skor_opsi[$i]
+                    ]);
+                }
             }
         }
 
@@ -397,9 +439,9 @@ class Admin extends BaseController
     public function kelola_kuis($id_modul)
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
-        
+            return redirect()->to('/auth');
+        }
+
         $modulModel = new \App\Models\ModulBelajarModel();
         $soalModel = new \App\Models\SoalKuisModel();
 
@@ -412,9 +454,9 @@ class Admin extends BaseController
     public function simpan_kuis($id_modul)
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
-        
+            return redirect()->to('/auth');
+        }
+
         $soalModel = new \App\Models\SoalKuisModel();
 
         $soalModel->save([
@@ -433,13 +475,13 @@ class Admin extends BaseController
     public function hapus_kuis($id_soal)
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
-        
+            return redirect()->to('/auth');
+        }
+
         $soalModel = new \App\Models\SoalKuisModel();
         $soal = $soalModel->find($id_soal);
         $id_modul = $soal['id_modul']; // Simpan id_modul sebelum dihapus untuk redirect
-        
+
         $soalModel->delete($id_soal);
 
         session()->setFlashdata('pesan', 'Soal berhasil dihapus!');
@@ -452,11 +494,11 @@ class Admin extends BaseController
     public function kelola_jurnal()
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
+            return redirect()->to('/auth');
+        }
 
         $db = \Config\Database::connect();
-        
+
         // Ambil data jurnal gabungkan dengan nama siswa
         $builder = $db->table('log_suasana_hati');
         $builder->select('log_suasana_hati.*, pengguna.nama_lengkap, pengguna.nama_panggilan');
@@ -469,7 +511,7 @@ class Admin extends BaseController
 
         foreach ($jurnal_mentah as $jurnal) {
             $teks_enkripsi_full = $jurnal['teks_jurnal'];
-            
+
             // Proses Dekripsi (Membuka Sandi)
             $parts = explode('::', base64_decode($teks_enkripsi_full));
             if (count($parts) === 2) {
@@ -500,8 +542,8 @@ class Admin extends BaseController
     public function kelola_sekolah()
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
+            return redirect()->to('/auth');
+        }
         $sekolahModel = new \App\Models\SekolahModel();
         return view('admin/kelola_sekolah', ['daftar_sekolah' => $sekolahModel->findAll()]);
     }
@@ -509,19 +551,19 @@ class Admin extends BaseController
     public function simpan_sekolah()
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
-        
+            return redirect()->to('/auth');
+        }
+
         $sekolahModel = new \App\Models\SekolahModel();
-        
+
         // Buat 6 karakter kode acak (Kombinasi Huruf Besar & Angka)
         $kode_acak = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 6);
-        
+
         $sekolahModel->save([
             'nama_sekolah' => $this->request->getPost('nama_sekolah'),
             'kode_otorisasi' => $kode_acak
         ]);
-        
+
         session()->setFlashdata('pesan', 'Sekolah baru ditambahkan dengan kode: ' . $kode_acak);
         return redirect()->to('/admin/kelola_sekolah');
     }
@@ -529,14 +571,14 @@ class Admin extends BaseController
     public function refresh_kode_sekolah($id_sekolah)
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
-        
+            return redirect()->to('/auth');
+        }
+
         $sekolahModel = new \App\Models\SekolahModel();
         $kode_baru = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 6);
-        
+
         $sekolahModel->update($id_sekolah, ['kode_otorisasi' => $kode_baru]);
-        
+
         session()->setFlashdata('pesan', 'Kode otorisasi berhasil diperbarui menjadi: ' . $kode_baru);
         return redirect()->to('/admin/kelola_sekolah');
     }
@@ -544,8 +586,8 @@ class Admin extends BaseController
     public function hapus_sekolah($id_sekolah)
     {
         if (session()->get('peran') !== 'admin' && session()->get('peran') !== 'guru') {
-    return redirect()->to('/auth');
-}
+            return redirect()->to('/auth');
+        }
         $sekolahModel = new \App\Models\SekolahModel();
         $sekolahModel->delete($id_sekolah);
         session()->setFlashdata('pesan', 'Data sekolah dihapus!');
@@ -560,7 +602,7 @@ class Admin extends BaseController
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
 
         $db = \Config\Database::connect();
-        
+
         // Ambil daftar kuesioner yang sudah ada untuk ditampilkan di tabel
         $data['daftar_kuesioner'] = $db->query("
             SELECT k.*, COUNT(s.id_soal) as jumlah_soal 
@@ -586,11 +628,11 @@ class Admin extends BaseController
             'deskripsi'       => $this->request->getPost('deskripsi'),
             'status_aktif'    => 1
         ]);
-        
+
         $id_kuesioner = $db->insertID(); // Dapatkan ID kuesioner yang baru saja dibuat
 
         // 2. Simpan Soal dan Opsi (Array Dinamis ke JSON)
-        $soal_array = $this->request->getPost('soal'); 
+        $soal_array = $this->request->getPost('soal');
 
         if (!empty($soal_array)) {
             $data_soal = [];
@@ -652,22 +694,158 @@ class Admin extends BaseController
         return redirect()->to('/admin/kelola_kuesioner');
     }
 
+    // ==========================================
+    // TAMPILAN LAPORAN KUESIONER (KOLOM DINAMIS)
+    // ==========================================
+    // ==========================================
+    // TAMPILAN LAPORAN KUESIONER (KOLOM DINAMIS)
+    // ==========================================
     public function laporan_kuesioner($id_kuesioner)
     {
-        if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
-        $data['kuesioner'] = $db->table('kuesioner')->where('id_kuesioner', $id_kuesioner)->get()->getRowArray();
 
-        // Ambil daftar siswa yang sudah mengerjakan kuesioner ini
-        $data['partisipan'] = $db->query("
-            SELECT pk.id_partisipasi, pk.tanggal_isi, p.nama_lengkap, p.nama_sekolah, p.email
-            FROM partisipasi_kuesioner pk
-            JOIN pengguna p ON pk.id_pengguna = p.id_pengguna
-            WHERE pk.id_kuesioner = ?
-            ORDER BY pk.tanggal_isi DESC
-        ", [$id_kuesioner])->getResultArray();
+        $kuesioner = $db->table('kuesioner')->where('id_kuesioner', $id_kuesioner)->get()->getRowArray();
+        if (!$kuesioner) return redirect()->back()->with('error', 'Kuesioner tidak ditemukan.');
 
-        return view('admin/laporan_kuesioner', $data);
+        $daftar_soal = $db->table('soal_kuesioner')->where('id_kuesioner', $id_kuesioner)->orderBy('urutan', 'ASC')->get()->getResultArray();
+
+        $partisipasi = $db->query("SELECT pk.*, p.nama_lengkap, p.nama_sekolah FROM partisipasi_kuesioner pk JOIN pengguna p ON pk.id_pengguna = p.id_pengguna WHERE pk.id_kuesioner = ? ORDER BY pk.tanggal_isi DESC", [$id_kuesioner])->getResultArray();
+
+        $laporan = [];
+        foreach ($partisipasi as $part) {
+            $data_jawaban = [];
+
+            foreach ($daftar_soal as $soal) {
+                $jawab = $db->table('jawaban_kuesioner')->where(['id_partisipasi' => $part['id_partisipasi'], 'id_soal' => $soal['id_soal']])->get()->getRowArray();
+
+                $bobot = 0; // Default
+                if ($jawab) {
+                    $opsi_array = json_decode($soal['opsi_jawaban'], true);
+                    if (is_array($opsi_array)) {
+                        foreach ($opsi_array as $opsi) {
+                            // Validasi: Jika format baru (JSON Berbobot)
+                            if (is_array($opsi) && isset($opsi['teks'])) {
+                                if ($opsi['teks'] === $jawab['jawaban_teks']) {
+                                    $bobot = $opsi['nilai'];
+                                    break;
+                                }
+                            }
+                            // Fallback: Jika masih menggunakan format array lama ["Setuju", "Tidak"]
+                            elseif (is_string($opsi)) {
+                                if ($opsi === $jawab['jawaban_teks']) {
+                                    $bobot = 0; // Format lama tidak memiliki bobot angka
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                $data_jawaban[] = $bobot;
+            }
+
+            $laporan[] = [
+                'id_partisipasi' => $part['id_partisipasi'],
+                'nama'           => $part['nama_lengkap'],
+                'asal_sekolah'   => $part['nama_sekolah'] ?? 'Tidak Diketahui',
+                'tanggal_isi'    => date('d M Y H:i', strtotime($part['tanggal_isi'])),
+                'jawaban_bobot'  => $data_jawaban
+            ];
+        }
+
+        return view('admin/laporan_kuesioner', [
+            'kuesioner'   => $kuesioner,
+            'daftar_soal' => $daftar_soal,
+            'laporan'     => $laporan,
+            'judul_halaman' => 'Laporan Kuesioner: ' . $kuesioner['judul_kuesioner']
+        ]);
+    }
+
+    // ==========================================
+    // FITUR UNDUH DATA KUESIONER
+    // ==========================================
+    // ==========================================
+    // FITUR UNDUH DATA KUESIONER
+    // ==========================================
+    public function ekspor_kuesioner($id_kuesioner, $format)
+    {
+        $db = \Config\Database::connect();
+
+        $kuesioner = $db->table('kuesioner')->where('id_kuesioner', $id_kuesioner)->get()->getRowArray();
+
+        // TAMBAHAN VALIDASI: Cegah error jika kuesioner tidak valid/terhapus
+        if (!$kuesioner) {
+            return redirect()->back()->with('error', 'Kuesioner tidak ditemukan.');
+        }
+
+        $daftar_soal = $db->table('soal_kuesioner')->where('id_kuesioner', $id_kuesioner)->orderBy('urutan', 'ASC')->get()->getResultArray();
+        $partisipasi = $db->query("SELECT pk.*, p.nama_lengkap, p.nama_sekolah FROM partisipasi_kuesioner pk JOIN pengguna p ON pk.id_pengguna = p.id_pengguna WHERE pk.id_kuesioner = ? ORDER BY pk.tanggal_isi DESC", [$id_kuesioner])->getResultArray();
+
+        $headers = ['No', 'Nama Siswa', 'Asal Sekolah', 'Tanggal Pengisian'];
+        foreach ($daftar_soal as $index => $soal) {
+            $headers[] = 'Soal ' . ($index + 1);
+        }
+
+        $data_export = [];
+        $no = 1;
+        foreach ($partisipasi as $part) {
+            $row = [
+                $no++,
+                $part['nama_lengkap'],
+                $part['nama_sekolah'] ?? '-',
+                $part['tanggal_isi']
+            ];
+
+            foreach ($daftar_soal as $soal) {
+                $jawab = $db->table('jawaban_kuesioner')->where(['id_partisipasi' => $part['id_partisipasi'], 'id_soal' => $soal['id_soal']])->get()->getRowArray();
+                $bobot = 0;
+
+                if ($jawab) {
+                    $opsi_array = json_decode($soal['opsi_jawaban'], true);
+                    if (is_array($opsi_array)) {
+                        foreach ($opsi_array as $opsi) {
+                            if (is_array($opsi) && isset($opsi['teks'])) {
+                                if ($opsi['teks'] === $jawab['jawaban_teks']) {
+                                    $bobot = $opsi['nilai'];
+                                    break;
+                                }
+                            } elseif (is_string($opsi) && $opsi === $jawab['jawaban_teks']) {
+                                $bobot = 0;
+                                break;
+                            }
+                        }
+                    }
+                }
+                $row[] = $bobot;
+            }
+            $data_export[] = $row;
+        }
+
+        // Generate nama file yang aman dari karakter ilegal
+        $filename = "Data_Kuesioner_" . preg_replace('/[^A-Za-z0-9]/', '_', $kuesioner['judul_kuesioner']) . "_" . date('Y-m-d');
+
+        if ($format === 'csv') {
+            header("Content-Disposition: attachment; filename=$filename.csv");
+            header("Content-Type: text/csv; charset=UTF-8");
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            fputcsv($file, $headers);
+            foreach ($data_export as $line) fputcsv($file, $line);
+            fclose($file);
+            exit;
+        } elseif ($format === 'excel') {
+            header("Content-Type: application/vnd.ms-excel");
+            header("Content-Disposition: attachment; filename=$filename.xls");
+            echo "<table border='1'><tr>";
+            foreach ($headers as $h) echo "<th style='background:#f4f4f4;'>$h</th>";
+            echo "</tr>";
+            foreach ($data_export as $row) {
+                echo "<tr>";
+                foreach ($row as $val) echo "<td>$val</td>";
+                echo "</tr>";
+            }
+            echo "</table>";
+            exit;
+        }
     }
 
     public function detail_jawaban_kuesioner($id_partisipasi)
@@ -702,9 +880,9 @@ class Admin extends BaseController
     {
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
-        
+
         $data['modul'] = $db->table('modul_belajar')->where('id_modul', $id_modul)->get()->getRowArray();
-        
+
         // Tarik data siswa yang sudah menyentuh modul ini
         $data['partisipan'] = $db->query("
             SELECT ps.id_progres, ps.tanggal_selesai, ps.skor_kuis, ps.status_modul, p.nama_lengkap, p.nama_sekolah
@@ -721,7 +899,7 @@ class Admin extends BaseController
     {
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
-        
+
         // Ambil profil siswa dan modul terkait
         $progres = $db->query("
             SELECT ps.*, p.nama_lengkap, m.judul_modul 
@@ -730,17 +908,17 @@ class Admin extends BaseController
             JOIN modul_belajar m ON ps.id_modul = m.id_modul
             WHERE ps.id_progres = ?
         ", [$id_progres])->getRowArray();
-        
+
         $data['info'] = $progres;
-        
+
         // Bongkar JSON jawaban siswa
         $jawaban_siswa = json_decode($progres['detail_jawaban'], true) ?? [];
-        
+
         // Ambil kunci jawaban asli dari database
         $soal = $db->table('soal_kuis')->where('id_modul', $progres['id_modul'])->get()->getResultArray();
-        
+
         $detail = [];
-        foreach($soal as $s) {
+        foreach ($soal as $s) {
             $id_s = $s['id_soal'];
             $jawab = $jawaban_siswa[$id_s] ?? 'Tidak dijawab';
             $detail[] = [
@@ -759,9 +937,9 @@ class Admin extends BaseController
     {
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
-        
+
         $data['skenario'] = $db->table('skenario_simulasi')->where('id_skenario', $id_skenario)->get()->getRowArray();
-        
+
         // Tarik data siswa yang memainkan simulasi ini
         $data['partisipan'] = $db->query("
             SELECT rs.*, p.nama_lengkap, p.nama_sekolah
@@ -781,14 +959,14 @@ class Admin extends BaseController
     {
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
-        
+
         // Tarik semua data siswa dan guru
         $data['daftar_pengguna'] = $db->table('pengguna')
-                                      ->whereIn('peran', ['siswa', 'guru'])
-                                      ->orderBy('peran', 'ASC') // Urutkan Guru di atas, Siswa di bawah
-                                      ->orderBy('nama_lengkap', 'ASC')
-                                      ->get()->getResultArray();
-                                      
+            ->whereIn('peran', ['siswa', 'guru'])
+            ->orderBy('peran', 'ASC') // Urutkan Guru di atas, Siswa di bawah
+            ->orderBy('nama_lengkap', 'ASC')
+            ->get()->getResultArray();
+
         return view('admin/manajemen_pengguna', $data);
     }
 
@@ -796,23 +974,23 @@ class Admin extends BaseController
     {
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
-        
+
         // Cari pengguna berdasarkan ID
         $user = $db->table('pengguna')->where('id_pengguna', $id_pengguna)->get()->getRowArray();
-        
-        if($user) {
+
+        if ($user) {
             // Jika status 1 (aktif), ubah jadi 0 (suspend). Jika 0, ubah jadi 1.
             $status_baru = $user['status_aktif'] == 1 ? 0 : 1;
-            
+
             $db->table('pengguna')->where('id_pengguna', $id_pengguna)->update(['status_aktif' => $status_baru]);
-            
-            $pesan = $status_baru == 1 
-                ? "✅ Akun {$user['nama_lengkap']} berhasil diaktifkan kembali." 
+
+            $pesan = $status_baru == 1
+                ? "✅ Akun {$user['nama_lengkap']} berhasil diaktifkan kembali."
                 : "🚫 Akun {$user['nama_lengkap']} berhasil ditangguhkan (suspend).";
-                
+
             session()->setFlashdata('pesan', $pesan);
         }
-        
+
         return redirect()->to('/admin/manajemen_pengguna');
     }
 
@@ -831,11 +1009,11 @@ class Admin extends BaseController
     {
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
-        
+
         $db->table('tips_harian')->insert([
             'isi_tips' => $this->request->getPost('isi_tips')
         ]);
-        
+
         session()->setFlashdata('pesan', 'Tips harian baru berhasil ditambahkan!');
         return redirect()->to('/admin/kelola_tips');
     }
@@ -844,9 +1022,9 @@ class Admin extends BaseController
     {
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
-        
+
         $db->table('tips_harian')->where('id_tips', $id_tips)->delete();
-        
+
         session()->setFlashdata('pesan', 'Tips berhasil dihapus.');
         return redirect()->to('/admin/kelola_tips');
     }
@@ -860,14 +1038,14 @@ class Admin extends BaseController
         return view('admin/ekspor_riset');
     }
 
- // ===================================================================
+    // ===================================================================
     // DATA RISET TRANSPARAN DAN INTEGRASI MULTI-FORMAT UNTUK ADMIN
     // ===================================================================
     public function unduh_data($kategori, $format)
     {
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
-        
+
         $filename = "CyberGuard_MasterData_{$kategori}_" . date('Y-m-d');
 
         // Mengambil berkas data asli tanpa modifikasi anonimitas hash
@@ -891,12 +1069,13 @@ class Admin extends BaseController
             header("Content-Disposition: attachment; filename=$filename.csv");
             header("Content-Type: text/csv; charset=UTF-8");
             $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
             fputcsv($file, $headers);
             foreach ($data as $row) fputcsv($file, $row);
-            fclose($file); exit;
-        } 
-        
+            fclose($file);
+            exit;
+        }
+
         // EKSPOR FORMAT EXCEL (HTML TABLE NATIVE STRUCTURE)
         if ($format === 'excel') {
             header("Content-Type: application/vnd.ms-excel");
@@ -909,7 +1088,8 @@ class Admin extends BaseController
                 foreach ($row as $v) echo "<td>$v</td>";
                 echo "</tr>";
             }
-            echo "</table>"; exit;
+            echo "</table>";
+            exit;
         }
 
         // EKSPOR FORMAT PDF VIA LAYOUT CETAK BROWSER NATIVE
@@ -967,7 +1147,7 @@ class Admin extends BaseController
     {
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
-        
+
         $data['panduan'] = $db->table('panduan_guru')->where('id_panduan', $id_panduan)->get()->getRowArray();
         return view('admin/edit_panduan', $data);
     }
@@ -981,7 +1161,7 @@ class Admin extends BaseController
         $tipe_media  = $this->request->getPost('tipe_media');
         $url_youtube = $this->request->getPost('url_youtube');
         $file_media  = $this->request->getPost('file_lama'); // Gunakan file lama sebagai default
-        
+
         // Cek jika Admin mengunggah file media baru
         if (in_array($tipe_media, ['gambar', 'dokumen', 'audio'])) {
             $file = $this->request->getFile('file_media');
@@ -1011,7 +1191,7 @@ class Admin extends BaseController
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
         $db->table('panduan_guru')->where('id_panduan', $id_panduan)->delete();
-        
+
         session()->setFlashdata('pesan', 'Materi panduan berhasil dihapus.');
         return redirect()->to('/admin/kelola_panduan');
     }
@@ -1023,7 +1203,7 @@ class Admin extends BaseController
     {
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
-        
+
         $data['jadwal'] = $db->query("
             SELECT jk.*, psis.nama_lengkap as nama_siswa, psis.nama_sekolah, pguru.nama_lengkap as nama_guru
             FROM jadwal_konseling jk
@@ -1031,7 +1211,7 @@ class Admin extends BaseController
             JOIN pengguna pguru ON jk.id_guru = pguru.id_pengguna
             ORDER BY jk.tanggal_konseling DESC
         ")->getResultArray();
-        
+
         return view('admin/kelola_intervensi', $data);
     }
 
@@ -1039,13 +1219,13 @@ class Admin extends BaseController
     {
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
-        
+
         $id_jadwal = $this->request->getPost('id_jadwal');
         $db->table('jadwal_konseling')->where('id_jadwal', $id_jadwal)->update([
             'tanggal_konseling' => $this->request->getPost('tanggal_konseling'),
             'catatan' => $this->request->getPost('catatan')
         ]);
-        
+
         session()->setFlashdata('pesan', 'Jadwal intervensi berhasil disesuaikan oleh Admin.');
         return redirect()->to('/admin/kelola_intervensi');
     }
@@ -1054,7 +1234,7 @@ class Admin extends BaseController
     {
         if (session()->get('peran') !== 'admin') return redirect()->to('/auth');
         $db = \Config\Database::connect();
-        
+
         $db->table('jadwal_konseling')->where('id_jadwal', $id_jadwal)->update(['status' => 'dibatalkan']);
         session()->setFlashdata('pesan', 'Jadwal konseling berhasil dibatalkan oleh Admin.');
         return redirect()->to('/admin/kelola_intervensi');

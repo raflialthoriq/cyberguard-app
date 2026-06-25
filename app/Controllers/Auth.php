@@ -21,12 +21,12 @@ class Auth extends BaseController
         return view('auth/login');
     }
 
-public function login_proses()
+    public function login_proses()
     {
         $penggunaModel = new PenggunaModel();
-        
+
         $email = $this->request->getPost('email');
-        $password_input = $this->request->getPost('password'); 
+        $password_input = $this->request->getPost('password');
 
         $user = $penggunaModel->where('email', $email)->first();
 
@@ -34,7 +34,7 @@ public function login_proses()
 
             // Jika kata sandi benar tetapi status akun masih belum aktif (0)
             if (isset($user['status_aktif']) && $user['status_aktif'] == 0) {
-                
+
                 // Cek jika sudah verifikasi WhatsApp tapi belum klik link email
                 if (!empty($user['token_verifikasi']) && empty($user['otp_code'])) {
                     session()->setFlashdata('pesan_gagal', 'Verifikasi WhatsApp Anda sudah berhasil. Mohon periksa kotak masuk atau spam email Anda untuk mengklik tautan aktivasi akun agar dapat masuk.');
@@ -44,7 +44,7 @@ public function login_proses()
                 // MEKANISME RE-GENERATE OTP BARU (OTP LAMA OTOMATIS HANGUS)
                 $kode_otp = rand(100000, 999999);
                 $expired_time = date('Y-m-d H:i:s', strtotime('+30 minutes'));
-                
+
                 $penggunaModel->update($user['id_pengguna'], [
                     'otp_code' => $kode_otp,
                     'otp_expired_at' => $expired_time
@@ -57,13 +57,44 @@ public function login_proses()
                 session()->setFlashdata('pesan_sukses', 'Akun Anda belum aktif. Kode OTP baru telah dikirimkan ke nomor WhatsApp Anda.');
                 return redirect()->to('/auth/verifikasi_otp');
             }
-            
+
+            // LOGIKA STREAK LOGIN (GAMIFIKASI)
+            // ==========================================
+            if ($user['peran'] == 'siswa') {
+                $waktu_sekarang = \CodeIgniter\I18n\Time::now('Asia/Jakarta', 'id_ID');
+                $tanggal_sekarang = $waktu_sekarang->toDateString();
+                $tanggal_kemarin = $waktu_sekarang->subDays(1)->toDateString();
+
+                $streak = $user['streak_login'];
+
+                if (!empty($user['terakhir_login'])) {
+                    $waktu_login_terakhir = \CodeIgniter\I18n\Time::parse($user['terakhir_login'], 'Asia/Jakarta');
+                    $tanggal_login_terakhir = $waktu_login_terakhir->toDateString();
+
+                    if ($tanggal_login_terakhir === $tanggal_kemarin) {
+                        $streak += 1; // Login hari berturut-turut
+                    } elseif ($tanggal_login_terakhir !== $tanggal_sekarang) {
+                        $streak = 1; // Bolong, reset ke 1
+                    }
+                } else {
+                    $streak = 1; // Login pertama kali
+                }
+
+                // Update database
+                $penggunaModel->update($user['id_pengguna'], [
+                    'terakhir_login' => $waktu_sekarang->toDateTimeString(),
+                    'streak_login'   => $streak
+                ]);
+                $user['streak_login'] = $streak;
+            }
+
             session()->set([
                 'id_pengguna'    => $user['id_pengguna'],
                 'nama_lengkap'   => $user['nama_lengkap'],
                 'nama_panggilan' => $user['nama_panggilan'],
                 'peran'          => $user['peran'],
                 'url_avatar'     => $user['url_avatar'],
+                'streak_login'   => $user['streak_login'] ?? 0, // Simpan ke session
                 'logged_in'      => true
             ]);
 
@@ -71,7 +102,7 @@ public function login_proses()
             if ($user['peran'] == 'guru') return redirect()->to('/guru/beranda');
             return redirect()->to('/siswa/beranda');
         }
-        
+
         session()->setFlashdata('pesan_gagal', 'Email atau Kata Sandi salah!');
         return redirect()->to('/auth');
     }
@@ -91,10 +122,10 @@ public function login_proses()
         return view('auth/register_guru', ['daftar_sekolah' => $sekolahModel->findAll()]);
     }
 
-public function register_proses($peran = 'siswa')
+    public function register_proses($peran = 'siswa')
     {
         $penggunaModel = new PenggunaModel();
-        
+
         $email = $this->request->getPost('email');
         $no_wa = $this->request->getPost('no_wa');
         $password_input = $this->request->getPost('password');
@@ -141,7 +172,7 @@ public function register_proses($peran = 'siswa')
             'no_wa'            => $no_wa,
             'kata_sandi'       => password_hash($password_input, PASSWORD_BCRYPT),
             'peran'            => $peran,
-            'status_aktif'     => 0, 
+            'status_aktif'     => 0,
             'token_verifikasi' => $email_token,
             'otp_code'         => $kode_otp,
             'otp_expired_at'   => $expired_time
@@ -157,9 +188,9 @@ public function register_proses($peran = 'siswa')
         $emailService = \Config\Services::email();
         $emailService->setFrom(env('email.SMTPUser') ?? 'ptriwindasari@gmail.com', 'Admin CyberGuard');
         $emailService->setTo($email);
-        $emailService->setMailType('html'); 
+        $emailService->setMailType('html');
         $emailService->setSubject('✉️ Langkah Terakhir: Validasi Email Akun CyberGuard');
-        
+
         $link = base_url("/auth/verifikasi/$email_token");
         $pesanEmail = "
         <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px;'>
@@ -218,7 +249,7 @@ public function register_proses($peran = 'siswa')
         return view('auth/verifikasi_otp');
     }
 
-public function proses_verifikasi_otp()
+    public function proses_verifikasi_otp()
     {
         $otp_input = $this->request->getPost('otp');
         $id_user = session()->get('otp_verify_user_id');
@@ -266,7 +297,7 @@ public function proses_verifikasi_otp()
         return view('auth/lupa_password');
     }
 
- public function proses_lupa_password()
+    public function proses_lupa_password()
     {
         $penggunaModel = new PenggunaModel();
         $email = $this->request->getPost('email');
@@ -289,14 +320,14 @@ public function proses_verifikasi_otp()
         $emailService = \Config\Services::email();
         $emailService->setFrom(env('email.SMTPUser') ?? 'ptriwindasari@gmail.com', 'Admin CyberGuard');
         $emailService->setTo($email);
-        
+
         // WAJIB SET FORMAT HTML AGAR EMAIL MASUK SECARA SEMPURNA
         $emailService->setMailType('html');
         $emailService->setSubject('🔐 Pemulihan Kata Sandi Akun - CyberGuard');
-        
+
         // PERBAIKAN: Mengarahkan ke rute reset_password yang benar, bukan rute verifikasi akun baru!
         $link = base_url("/auth/reset_password/$token");
-        
+
         $pesanHTML = "
         <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px;'>
             <h2 style='color: #2b6cb0; border-bottom: 2px solid #2b6cb0; padding-bottom: 10px;'>Permintaan Pemulihan Kata Sandi</h2>
@@ -310,7 +341,7 @@ public function proses_verifikasi_otp()
             <br>
             <p>Salam hangat,<br><strong>Tim Manajemen CyberGuard</strong></p>
         </div>";
-        
+
         $emailService->setMessage($pesanHTML);
         $emailService->send();
 
@@ -318,7 +349,7 @@ public function proses_verifikasi_otp()
         return redirect()->to('/auth');
     }
 
-public function reset_password($token)
+    public function reset_password($token)
     {
         $penggunaModel = new PenggunaModel();
         $user = $penggunaModel->where('token_reset', $token)->where('reset_kedaluwarsa >=', date('Y-m-d H:i:s'))->first();
@@ -331,7 +362,7 @@ public function reset_password($token)
         return view('auth/reset_password', ['token' => $token]);
     }
 
-public function proses_ganti_password()
+    public function proses_ganti_password()
     {
         $penggunaModel = new PenggunaModel();
         $token = $this->request->getPost('token');
@@ -357,13 +388,13 @@ public function proses_ganti_password()
     // ==========================================
     // 5. API WHATSAPP FONNTE HELPER
     // ==========================================
-   // ==========================================
+    // ==========================================
     // FUNGSI PENEMBAK API WHATSAPP (FONNTE)
     // ==========================================
-private function kirim_notifikasi_wa($no_wa, $pesan) 
+    private function kirim_notifikasi_wa($no_wa, $pesan)
     {
         if (empty($no_wa)) return false;
-        $token = 'SubHsSjfWkd7bBvURMLB'; 
+        $token = 'SubHsSjfWkd7bBvURMLB';
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://api.fonnte.com/send',

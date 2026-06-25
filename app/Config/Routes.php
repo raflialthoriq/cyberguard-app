@@ -112,6 +112,8 @@ $routes->get('/admin/batal_intervensi/(:num)', 'Admin::batal_intervensi/$1');
 $routes->get('/admin/edit_panduan/(:num)', 'Admin::edit_panduan/$1');
 $routes->post('/admin/update_panduan', 'Admin::update_panduan');
 
+// Rute untuk ekspor kuesioner dinamis (menangkap 2 parameter: ID Kuesioner dan Format File)
+$routes->get('admin/ekspor_kuesioner/(:num)/(:segment)', 'Admin::ekspor_kuesioner/$1/$2');
 // ==========================================
 // RUTE GURU BK (Pemantauan CBT Siswa)
 // ==========================================
@@ -133,6 +135,8 @@ $routes->get('/guru/siswa_perhatian', 'Guru::siswa_perhatian');
 // Rute Siswa (Nanti akan kita tambahkan Filters/Middleware untuk keamanan)
 $routes->get('/siswa/beranda', 'Siswa::beranda');
 $routes->post('/siswa/jurnal/simpan', 'Siswa::simpan_jurnal');
+$routes->post('siswa/simpan_jurnal', 'Siswa::simpan_jurnal');
+$routes->get('siswa/jurnal', 'Siswa::jurnal');
 $routes->get('/siswa/jurnal', 'Siswa::jurnal');
 $routes->get('/siswa/modul', 'Siswa::daftar_modul');
 $routes->get('/siswa/modul/baca/(:num)', 'Siswa::baca_modul/$1');
@@ -165,3 +169,5 @@ $routes->get('/guru/panduan_fasilitator', 'Guru::panduan_fasilitator');
 // Rute Ekspor Laporan Guru
 $routes->get('/guru/ekspor_laporan/(:segment)', 'Guru::ekspor_laporan/$1');
 $routes->get('/guru/baca_panduan/(:num)', 'Guru::baca_panduan/$1');
+// Tambahkan di app/Config/Routes.php
+$routes->get('guru/keluarkan_siswa/(:num)/(:num)', 'Guru::keluarkan_siswa/$1/$2');
