@@ -106,7 +106,7 @@
                 Teks Panduan Lengkap
             </h3>
             <div class="prose text-gray-700 font-medium leading-relaxed text-sm md:text-base whitespace-pre-line text-justify">
-                <?= $panduan['konten_panduan'] ? $panduan['konten_panduan'] : '<p class="text-gray-400 italic">Materi bacaan kosong.</p>' ?>
+                <?= $panduan['konten_panduan'] ? ($panduan['konten_panduan']) : '<span class="text-gray-400 italic">Materi bacaan kosong.</span>' ?>
             </div>
         </div>
     </div>

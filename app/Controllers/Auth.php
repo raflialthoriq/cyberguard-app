@@ -36,10 +36,10 @@ class Auth extends BaseController
             if (isset($user['status_aktif']) && $user['status_aktif'] == 0) {
 
                 // Cek jika sudah verifikasi WhatsApp tapi belum klik link email
-                if (!empty($user['token_verifikasi']) && empty($user['otp_code'])) {
-                    session()->setFlashdata('pesan_gagal', 'Verifikasi WhatsApp Anda sudah berhasil. Mohon periksa kotak masuk atau spam email Anda untuk mengklik tautan aktivasi akun agar dapat masuk.');
-                    return redirect()->to('/auth');
-                }
+                // if (!empty($user['token_verifikasi']) && empty($user['otp_code'])) {
+                //     session()->setFlashdata('pesan_gagal', 'Verifikasi WhatsApp Anda sudah berhasil. Mohon periksa kotak masuk atau spam email Anda untuk mengklik tautan aktivasi akun agar dapat masuk.');
+                //     return redirect()->to('/auth');
+                // }
 
                 // MEKANISME RE-GENERATE OTP BARU (OTP LAMA OTOMATIS HANGUS)
                 $kode_otp = rand(100000, 999999);
@@ -181,35 +181,35 @@ class Auth extends BaseController
         $inserted_id = $penggunaModel->getInsertID();
 
         // 1. Tembak Kode OTP ke WhatsApp
-        $pesanWA = "*Verifikasi Pendaftaran Akun CyberGuard* 🛡️\n\nHalo *{$this->request->getPost('nama_lengkap')}*,\n\nBerikut adalah kode OTP verifikasi WhatsApp Anda:\n\n*{$kode_otp}*\n\n_Kode ini rahasia, berlaku selama 30 menit. Silakan masukkan kode ini pada halaman verifikasi aplikasi._";
+        $pesanWA = "*Verifikasi Pendaftaran Akun CyberGuard* 🌟\nHalo *{$this->request->getPost('nama_lengkap')}*,\n\nBerikut adalah kode OTP verifikasi WhatsApp Anda:\n\n*{$kode_otp}*\n\n_Kode ini rahasia, berlaku selama 30 menit. Silakan masukkan kode ini pada halaman verifikasi aplikasi._";
         $this->kirim_notifikasi_wa($no_wa, $pesanWA);
 
-        // 2. Tembak Link Validasi ke Email (Format Formal & Pendekatan Psikologis)
-        $emailService = \Config\Services::email();
-        $emailService->setFrom(env('email.SMTPUser') ?? 'ptriwindasari@gmail.com', 'Admin CyberGuard');
-        $emailService->setTo($email);
-        $emailService->setMailType('html');
-        $emailService->setSubject('✉️ Langkah Terakhir: Validasi Email Akun CyberGuard');
+        // // 2. Tembak Link Validasi ke Email (Format Formal & Pendekatan Psikologis)
+        // $emailService = \Config\Services::email();
+        // $emailService->setFrom(env('email.SMTPUser') ?? 'admin@cyberguardapp.id', 'Admin CyberGuard');
+        // $emailService->setTo($email);
+        // $emailService->setMailType('html');
+        // $emailService->setSubject('✉️ Langkah Terakhir: Validasi Email Akun CyberGuard');
 
-        $link = base_url("/auth/verifikasi/$email_token");
-        $pesanEmail = "
-        <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px;'>
-            <h2 style='color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 10px;'>Selamat Datang di CyberGuard</h2>
-            <p>Halo, " . esc($this->request->getPost('nama_lengkap')) . "</p>
-            <p>Terima kasih telah mengambil langkah awal yang luar biasa untuk bergabung dalam ekosistem pelindung ruang digital dan kesehatan psikologis remaja bersama CyberGuard.</p>
-            <p>Untuk memastikan keabsahan korespondensi data dan keamanan akun Anda, mohon lakukan konfirmasi email dengan mengeklik tautan resmi di bawah ini:</p>
-            <div style='text-align: center; margin: 30px 0;'>
-                <a href='$link' style='padding: 12px 24px; background-color: #10b981; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;'>Validasi & Aktifkan Email Saya</a>
-            </div>
-            <p>Setelah Anda menyelesaikan verifikasi kode OTP WhatsApp di aplikasi, pastikan Anda juga menekan tombol di atas agar akun dapat digunakan sepenuhnya.</p>
-            <br>
-            <p>Salam hangat,<br><strong>Tim Pengembang CyberGuard</strong></p>
-        </div>";
-        $emailService->setMessage($pesanEmail);
-        $emailService->send();
+        // $link = base_url("/auth/verifikasi/$email_token");
+        // $pesanEmail = "
+        // <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px;'>
+        //     <h2 style='color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 10px;'>Selamat Datang di CyberGuard</h2>
+        //     <p>Halo, " . esc($this->request->getPost('nama_lengkap')) . "</p>
+        //     <p>Terima kasih telah mengambil langkah awal yang luar biasa untuk bergabung dalam ekosistem pelindung ruang digital dan kesehatan psikologis remaja bersama CyberGuard.</p>
+        //     <p>Untuk memastikan keabsahan korespondensi data dan keamanan akun Anda, mohon lakukan konfirmasi email dengan mengeklik tautan resmi di bawah ini:</p>
+        //     <div style='text-align: center; margin: 30px 0;'>
+        //         <a href='$link' style='padding: 12px 24px; background-color: #10b981; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;'>Validasi & Aktifkan Email Saya</a>
+        //     </div>
+        //     <p>Setelah Anda menyelesaikan verifikasi kode OTP WhatsApp di aplikasi, pastikan Anda juga menekan tombol di atas agar akun dapat digunakan sepenuhnya.</p>
+        //     <br>
+        //     <p>Salam hangat,<br><strong>Tim Pengembang CyberGuard</strong></p>
+        // </div>";
+        // $emailService->setMessage($pesanEmail);
+        // $emailService->send();
 
         session()->set('otp_verify_user_id', $inserted_id);
-        session()->setFlashdata('pesan_sukses', 'Pendaftaran awal berhasil! Silakan masukkan kode OTP WhatsApp Anda, dan periksa email untuk validasi tautan.');
+        session()->setFlashdata('pesan_sukses', 'Pendaftaran berhasil! Silakan masukkan kode OTP yang baru saja dikirim ke WhatsApp Anda untuk mengaktifkan akun.');
         return redirect()->to('/auth/verifikasi_otp');
     }
 
@@ -275,13 +275,16 @@ class Auth extends BaseController
         }
 
         if ($otp_input == $user['otp_code']) {
-            // Sukses OTP WA: Kosongkan field OTP agar tidak bisa dipakai ulang
+            // Sukses OTP WA: Langsung Aktifkan Akun!
             $penggunaModel->update($id_user, [
-                'otp_code' => null,
-                'otp_expired_at' => null
+                'status_aktif'     => 1,     // <-- Ubah status jadi 1 (Aktif)
+                'token_verifikasi' => null,  // <-- Hapus token email karena sudah tidak dipakai
+                'otp_code'         => null,
+                'otp_expired_at'   => null
             ]);
 
-            session()->setFlashdata('pesan_sukses', 'Verifikasi WhatsApp berhasil dikunci! Langkah terakhir, silakan buka kotak masuk atau folder spam email Anda untuk mengklik tautan aktivasi akun.');
+            // Ubah pesan sukses
+            session()->setFlashdata('pesan_sukses', 'Verifikasi WhatsApp berhasil! Akun Anda telah aktif sepenuhnya. Silakan masuk.');
             return redirect()->to('/auth');
         } else {
             session()->setFlashdata('pesan_gagal', 'Kode OTP yang Anda masukkan salah.');
@@ -318,7 +321,7 @@ class Auth extends BaseController
         ]);
 
         $emailService = \Config\Services::email();
-        $emailService->setFrom(env('email.SMTPUser') ?? 'ptriwindasari@gmail.com', 'Admin CyberGuard');
+        $emailService->setFrom(env('email.SMTPUser') ?? 'admin@cyberguardapp.id', 'Admin CyberGuard');
         $emailService->setTo($email);
 
         // WAJIB SET FORMAT HTML AGAR EMAIL MASUK SECARA SEMPURNA
@@ -394,7 +397,7 @@ class Auth extends BaseController
     private function kirim_notifikasi_wa($no_wa, $pesan)
     {
         if (empty($no_wa)) return false;
-        $token = 'SubHsSjfWkd7bBvURMLB';
+        $token = 'QuCu8CKf2s3aJ9GhGhM5';
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://api.fonnte.com/send',

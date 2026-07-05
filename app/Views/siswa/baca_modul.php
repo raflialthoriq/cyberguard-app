@@ -109,7 +109,7 @@
         <div class="neu-flat p-6 rounded-3xl">
             <!-- nl2br digunakan agar enter/baris baru dari database dirender sebagai <br> di HTML -->
             <p class="text-sm leading-relaxed text-gray-700 font-medium">
-                <?= nl2br(esc($modul['konten_materi'])) ?>
+                <?= nl2br(($modul['konten_materi'])) ?>
             </p>
         </div>
 

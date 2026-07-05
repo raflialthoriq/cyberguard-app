@@ -145,31 +145,36 @@ class Siswa extends BaseController
 
     public function simpan_jurnal()
     {
-        $jurnalModel = new LogSuasanaHatiModel();
+        $jurnalModel = new \App\Models\LogSuasanaHatiModel();
         $encrypter = \Config\Services::encrypter();
 
         if (session()->get('peran') !== 'siswa') return redirect()->to('/auth');
-        $teks_asli = $this->request->getPost('teks_jurnal');
-
+        
         $suasana_hati = $this->request->getPost('suasana_hati');
         $teks_mentah = $this->request->getPost('teks_jurnal');
 
         $teks_enkripsi = base64_encode($encrypter->encrypt($teks_mentah));
-
-        // Gunakan backslash (\) di awal untuk langsung memanggil library CI4
         $waktu_sekarang = \CodeIgniter\I18n\Time::now('Asia/Jakarta', 'id_ID');
+        $id_pengguna = session()->get('id_pengguna');
 
         $data = [
-            'id_pengguna'    => session()->get('id_pengguna'),
+            'id_pengguna'    => $id_pengguna,
             'teks_jurnal'    => $teks_enkripsi,
             'suasana_hati'   => empty($suasana_hati) ? null : $suasana_hati,
             'tanggal_jurnal' => $waktu_sekarang->toDateTimeString()
         ];
 
+        $jurnalModel->insert($data);
+
+        // =========================================================
+        // OTOMATISASI: TAMBAH SKOR KESEJAHTERAAN (+5 POIN PER JURNAL)
+        // =========================================================
+        $db = \Config\Database::connect();
+        $db->query("UPDATE pengguna SET skor_kesejahteraan = skor_kesejahteraan + 5 WHERE id_pengguna = ?", [$id_pengguna]);
+
         session()->setFlashdata('pesan', 'Jurnal dan suasana hatimu berhasil disimpan secara rahasia!');
         session()->setFlashdata('mood_tersimpan', true);
 
-        $jurnalModel->insert($data);
         return redirect()->to(base_url('siswa/beranda'))->with('success', 'Catatan harianmu berhasil disimpan dengan aman.');
     }
 
@@ -470,34 +475,36 @@ class Siswa extends BaseController
     public function proses_simulasi($id_skenario)
     {
         if (session()->get('peran') !== 'siswa') return redirect()->to('/auth');
-        $opsiModel = new OpsiSimulasiModel();
-        $riwayatModel = new RiwayatSimulasiModel();
+        $opsiModel = new \App\Models\OpsiSimulasiModel();
+        $riwayatModel = new \App\Models\RiwayatSimulasiModel();
 
         $id_opsi_terpilih = $this->request->getPost('pilihan_opsi');
         $opsi_terpilih = $opsiModel->find($id_opsi_terpilih);
+        $id_pengguna = session()->get('id_pengguna');
 
         if ($opsi_terpilih) {
             $skor = $opsi_terpilih['skor_opsi'];
             $riwayatModel->save([
-                'id_pengguna' => session()->get('id_pengguna'),
+                'id_pengguna' => $id_pengguna,
                 'id_skenario' => $id_skenario,
-                'id_opsi_terpilih' => $id_opsi_terpilih, // Simpan memori pilihan
+                'id_opsi_terpilih' => $id_opsi_terpilih,
                 'skor_kontrol_diri' => $skor,
                 'tanggal_percobaan' => date('Y-m-d H:i:s')
             ]);
 
             if ($skor > 0) {
                 $db = \Config\Database::connect();
-                $db->query("UPDATE pengguna SET total_poin = total_poin + 10 WHERE id_pengguna = ?", [session()->get('id_pengguna')]);
+                // =========================================================
+                // OTOMATISASI: TAMBAH POIN GAMIFIKASI & SKOR KESEJAHTERAAN
+                // (Poin umum +10, Skor Kesejahteraan bertambah sesuai nilai bobot jawaban)
+                // =========================================================
+                $db->query("UPDATE pengguna SET total_poin = total_poin + 10, skor_kesejahteraan = skor_kesejahteraan + ? WHERE id_pengguna = ?", [$skor, $id_pengguna]);
+                
                 session()->setFlashdata('pesan_sukses', "Skor CBT +$skor! Simulasi berhasil diselesaikan.");
             } else {
                 session()->setFlashdata('pesan_gagal', "Respons kurang tepat. Silakan coba lagi strategi lain.");
             }
         }
-
-        // PERUBAHAN DISINI: 
-        // Menggunakan redirect()->back() agar siswa dikembalikan ke halaman main_simulasi
-        // Flashdata (Pop Up Notifikasi) akan otomatis muncul di halaman tersebut.
         return redirect()->back();
     }
 }

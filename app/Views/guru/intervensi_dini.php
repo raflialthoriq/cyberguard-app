@@ -86,7 +86,7 @@
                                 </div>
                                 <button type="submit" class="w-full bg-blue-600 text-white font-extrabold py-2 rounded-xl text-xs shadow hover:bg-blue-700 transition active:scale-95 flex items-center justify-center gap-2">
                                     <i data-lucide="calendar-plus" class="w-4 h-4"></i>
-                                    Jadwalkan Konseling & Kirim Email
+                                    Kirim Pemberitahuan Jadwal Konseling
                                 </button>
                             </form>
                         <?php endif; ?>

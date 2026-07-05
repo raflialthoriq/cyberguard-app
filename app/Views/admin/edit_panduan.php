@@ -79,7 +79,7 @@
 
             <div>
                 <label class="block text-xs font-bold text-gray-500 mb-1">Deskripsi Singkat</label>
-                <textarea name="deskripsi" class="w-full neu-pressed px-4 py-3 rounded-xl text-sm font-bold focus:outline-none" required><?= esc($panduan['deskripsi']) ?></textarea>
+                <textarea name="deskripsi" class="w-full neu-pressed px-4 py-3 rounded-xl text-sm font-bold focus:outline-none" required><?= ($panduan['deskripsi']) ?></textarea>
             </div>
 
             <div>

@@ -156,7 +156,7 @@
 
             <div>
                 <label class="block text-sm font-bold mb-2 ml-2 text-gray-600">Konten Materi Utama (Teks)</label>
-                <textarea name="konten_materi" class="neu-pressed w-full p-5 rounded-3xl focus:outline-none text-gray-700 resize-none h-40" required><?= esc($modul['konten_materi']) ?></textarea>
+                <textarea name="konten_materi" class="neu-pressed w-full p-5 rounded-3xl focus:outline-none text-gray-700 resize-none h-40" required><?= ($modul['konten_materi']) ?></textarea>
             </div>
 
             <button type="submit" class="neu-btn-blue w-full text-white font-bold py-4 rounded-2xl transition duration-300 mt-4">
